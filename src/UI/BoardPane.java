@@ -53,19 +53,25 @@ public class BoardPane extends JPanel {
         g.drawImage(boardImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
         if (board != null) {
         	List<Hex> hexes = board.getHexes();
-        	int d = 60;
+        	int d = 64;
         	int offset = d / 2;
         	for (Hex hex : hexes) {
         		if (!hex.isEmpty()) {
         			int playerId = hex.getPiece().getPlayer();
             		Color c = Color.GREEN;
+            		if (playerId == 1) c = Color.GREEN;
+            		if (playerId == 2) c = Color.BLACK;
+            		if (playerId == 3) c = Color.WHITE;
+            		if (playerId == 4) c = Color.BLUE;
+            		if (playerId == 5) c = Color.RED;
+            		if (playerId == 6) c = Color.YELLOW;
         			int x = hex.getX();
             		int y = hex.getY();
             		drawCenteredCircle(
             				g, 
-            				x * d - offset * y + 320,
-            				y * 55, 
-            				45, 
+            				x * d - offset * y + 240,
+            				y * 56 + 50, 
+            				50, 
             				c
             		);
         		}
