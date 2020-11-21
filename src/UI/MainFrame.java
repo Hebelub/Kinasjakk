@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 
 public class MainFrame {
 
+
+
 	JFrame frame;
 	BoardPane boardPane;
 	SideBar sideBar;
