@@ -1,10 +1,11 @@
 package kinasjakk;
 
+import UI.MainFrame;
+
 public class Main {
 
 	public static void main(String[] args) {
-		AI ai = new AI();
-		ai.run();
+		MainFrame frame = new MainFrame();
 	}
 
 }
