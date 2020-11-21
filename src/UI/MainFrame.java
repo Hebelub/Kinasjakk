@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 
 public class MainFrame {
 
+
+
 	JFrame frame;
 	BufferedImage boardImage;
 	
