@@ -29,7 +29,7 @@ public class MainFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(boardImage, 0, 0, 500, 500, null);
+                g.drawImage(boardImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
         frame.add(pane);
