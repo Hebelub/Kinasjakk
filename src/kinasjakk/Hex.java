@@ -11,7 +11,7 @@ public class Hex {
 	private int x;
 	private int y;
 
-	Hex[] neighbours;
+	public Hex[] neighbours;
 
 	public Hex() {
 		id = nextId++;
@@ -43,26 +43,48 @@ public class Hex {
 		return "Hex: " + id + ", [neighbours=" + Arrays.toString(neighbours) + "]";
 	}
 
-	public Hex[] getPossibleMoves() {
+	public List<Hex> possibleMovesInAllDirections(Hex currentJumpHex, List<Hex> possibleHexes) {
+		// Create a list off all possible hexes with one move
+		List<Hex> oneDepthHexes = new ArrayList<Hex>();
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_LEFT, possibleHexes));
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_RIGHT, possibleHexes));
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.RIGHT, possibleHexes));
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.BOTTOM_RIGHT, possibleHexes));
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.BOTTOM_LEFT, possibleHexes));
+		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.LEFT, possibleHexes));
 
-		getHexesInLine(Direction.TOP_LEFT);
-		getHexesInLine(Direction.TOP_RIGHT);
-		getHexesInLine(Direction.RIGHT);
-		getHexesInLine(Direction.BOTTOM_RIGHT);
-		getHexesInLine(Direction.BOTTOM_LEFT);
-		getHexesInLine(Direction.LEFT);
+		//
+		if(oneDepthHexes.size() == 0) return possibleHexes;
+		oneDepthHexes.addAll(possibleHexes);
 
-		return null;
+		//
+		List<Hex> returnHex = new ArrayList<Hex>();
+
+		for (Hex hex : oneDepthHexes) {
+			returnHex.addAll(possibleMovesInAllDirections(hex, oneDepthHexes));
+		}
+
+		return returnHex;
+
 	}
 
-	public List<Hex> getHexesInLine(Direction d) {
+	public List<Hex> getOneDistanceHexes() {
+		List<Hex> oneDistanceHexes = new ArrayList<>();
+
+		for (Hex hex : neighbours) {
+			if (hex.isEmpty()) {
+				oneDistanceHexes.add(hex);
+			}
+		}
+
+		return oneDistanceHexes;
+	}
+
+	public List<Hex> getHexesInLine(Hex from, Direction d, List<Hex> blockedHexes) {
 
 		List<Hex> possibleMoves = new ArrayList<Hex>();
-
 		List<Hex> currentLine = new ArrayList<Hex>();
-
 		boolean lineContainsAPiece = false;
-
 		int last = 0;
 
 		while(currentLine.get(last) != null) {
@@ -76,14 +98,25 @@ public class Hex {
 
 			if (neighbor.isEmpty() && lineContainsAPiece) {
 
-				for(int i = 1; i < Math.floor((last - 2) / 2); i++) {
-
-					if(currentLine.get(i) != currentLine.get(last - i)) {
-
+				boolean isBlocked = false;
+				for (Hex hex : blockedHexes) {
+					if (this == hex) {
+						isBlocked = true;
 						break;
 					}
-					else if(i == Math.floor((last - 2) / 2)) {
-						possibleMoves.add(currentLine.get(last));
+				}
+
+				if (!isBlocked) {
+
+					for(int i = 1; i < Math.floor((last - 2) / 2); i++) {
+
+						if(currentLine.get(i) != currentLine.get(last - i)) {
+
+							break;
+						}
+						else if(i == Math.floor((last - 2) / 2)) {
+							possibleMoves.add(currentLine.get(last));
+						}
 					}
 				}
 
