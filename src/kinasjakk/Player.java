@@ -14,7 +14,6 @@ public class Player {
         isHuman = true;
         Random r = new Random();
         color = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
-        System.out.println(color.toString());
     }
 
     public String getName() {
