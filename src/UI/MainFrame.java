@@ -1,23 +1,18 @@
 package UI;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+
+import kinasjakk.Game;
 
 public class MainFrame {
-
-
-
+	
 	JFrame frame;
 	BoardPane boardPane;
 	SideBar sideBar;
+	Game currentGame;
 	
 	public MainFrame() {
 		frame = new JFrame();
@@ -28,6 +23,11 @@ public class MainFrame {
         frame.add(boardPane);
         frame.add(sideBar);
         frame.setVisible(true);
+        startNewGame();
 	}
 	
+	public void startNewGame() {
+		currentGame = new Game();
+		boardPane.setBoard(currentGame.getBoard());
+	}
 }

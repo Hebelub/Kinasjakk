@@ -14,4 +14,8 @@ public class Board {
 	public void addHex(Hex hex) {
 		hexes.add(hex);
 	}
+	
+	public List<Hex> getHexes() {
+		return hexes;
+	}
 }
