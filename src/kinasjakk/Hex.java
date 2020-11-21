@@ -42,14 +42,20 @@ public class Hex {
 
 		List<Hex> currentLine = new ArrayList<Hex>();
 
+		boolean lineContainsAPiece = false;
+
 		int last = 0;
 
 		while(currentLine.get(last) != null) {
 
 			Hex neighbor = neighbours[d.ordinal()];
-			currentLine.add(neighbor);
 
-			if (neighbor.isEmpty()) {
+			currentLine.add(neighbor);
+			if(!lineContainsAPiece && !neighbor.isEmpty()) {
+				lineContainsAPiece = true;
+			}
+
+			if (neighbor.isEmpty() && lineContainsAPiece) {
 
 				for(int i = 1; i < Math.floor((last - 2) / 2); i++) {
 
