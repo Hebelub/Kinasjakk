@@ -1,10 +1,17 @@
 package kinasjakk;
 
-public class Board {
-	Piece p1;
+import java.util.ArrayList;
+import java.util.List;
 
+public class Board {
+	
+	List<Hex> hexes;
+	
 	public Board() {
-		System.out.println("I'm a board!");
+		hexes = new ArrayList<Hex>();
 	}
 	
+	public void addHex(Hex hex) {
+		hexes.add(hex);
+	}
 }
