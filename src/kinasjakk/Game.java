@@ -28,7 +28,7 @@ public class Game {
 		try {
 			//Read board file
 			reader = new BufferedReader(new FileReader("boards/"+boardName+".txt"));
-			//Read first life
+			//Read first line
 			String line = reader.readLine();
 			//Store the length of first row, which should also be length of all rows
 			int rowLength = line.split("").length;

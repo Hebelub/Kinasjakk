@@ -53,9 +53,20 @@ public class Hex {
 		return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
-	public List<Hex> possibleMovesInAllDirections(Hex currentJumpHex, List<Hex> possibleHexes) {
-		// Create a list off all possible hexes with one move
+	public List<Hex> getPossibleJumpingHexesFrom(Hex hex) {
+		List<Hex> possibleHexes = new ArrayList<>();
+		possibleHexes.add(hex);
+
+		List<Hex> possibleHexes1 = recursivePossibleHexes(hex, possibleHexes);
+		possibleHexes1.remove(hex);
+		return possibleHexes1;
+
+	}
+
+	private List<Hex> recursivePossibleHexes(Hex currentJumpHex, List<Hex> possibleHexes) {
+		// Create a list off all possible hexes with only one jump
 		List<Hex> oneDepthHexes = new ArrayList<>();
+
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_LEFT, possibleHexes));
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_RIGHT, possibleHexes));
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.RIGHT, possibleHexes));
@@ -63,18 +74,19 @@ public class Hex {
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.BOTTOM_LEFT, possibleHexes));
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.LEFT, possibleHexes));
 
-		//
+		// If it can not jump anywhere from currentJumpHex, return possibleHexes
 		if(oneDepthHexes.size() == 0) return possibleHexes;
-		oneDepthHexes.addAll(possibleHexes);
+		// Adds all the oneDepthHexes to possibleHexes
+		possibleHexes.addAll(oneDepthHexes);
 
+	//	// Creates a list to return
+	//	List<Hex> returnHexes = new ArrayList<>();
 		//
-		List<Hex> returnHex = new ArrayList<>();
-
 		for (Hex hex : oneDepthHexes) {
-			returnHex.addAll(possibleMovesInAllDirections(hex, oneDepthHexes));
+			possibleHexes.addAll(recursivePossibleHexes(hex, possibleHexes));
 		}
 
-		return returnHex;
+		return possibleHexes;
 
 	}
 
@@ -105,7 +117,10 @@ public class Hex {
 
 			Hex neighbor = currentLine.get(last).neighbours[d.ordinal()];
 
-			System.out.println(neighbor + ", " + d + ", " + blockedHexes);
+			int id = 0;
+			if(neighbor == null) id = -1;
+			else id = neighbor.id;
+		//	System.out.println("Hex: " + id + ", " + d + ", " + blockedHexes);
 
 			if(neighbor == null) break;
 
