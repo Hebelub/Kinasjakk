@@ -29,5 +29,6 @@ public class MainFrame {
 	public void startNewGame() {
 		currentGame = new Game();
 		boardPane.setBoard(currentGame.getBoard());
+		sideBar.setGame(currentGame);
 	}
 }

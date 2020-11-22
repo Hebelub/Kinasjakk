@@ -48,4 +48,10 @@ public class Board {
 
 		return possibleMoves;
 	}
+
+	public void makeMove(Hex from, Hex to) {
+		Piece pieceToMove = from.getPiece();
+		from.setPiece(to.getPiece());
+		to.setPiece(pieceToMove);	
+	}
 }

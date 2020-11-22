@@ -40,7 +40,14 @@ public class Hex {
 
 	@Override
 	public String toString() {
-		return "Hex: " + id + ", [neighbours=" + Arrays.toString(neighbours) + "]";
+		int[] ids = new int[6];
+		for (int i = 0; i < neighbours.length; i++) {
+			if (neighbours[i] != null)
+				ids[i] = neighbours[i].id;
+			else 
+				ids[i] = -1;
+		}
+		return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
 	public List<Hex> possibleMovesInAllDirections(Hex currentJumpHex, List<Hex> possibleHexes) {

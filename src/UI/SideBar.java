@@ -1,16 +1,38 @@
 package UI;
 
-import javax.swing.JComboBox;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import kinasjakk.Board;
+import kinasjakk.Game;
 
 public class SideBar extends JPanel {
 	
-	JComboBox playerSelect;
+	JButton button;
+	Game game;
 	
 	public SideBar() {
-		
-		playerSelect = new JComboBox();
-		
+		button = new JButton("Make move");
+		this.add(button);
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Board b = game.getBoard();
+				System.out.println(b.getHexes().size());
+				System.out.println(b.getHexes().get(0));
+				System.out.println(b.getHexes().get(40));
+				b.makeMove(b.getHexes().get(0), b.getHexes().get(40));
+			}
+			
+		});
+	}
+	
+	public void setGame(Game game) {
+		this.game = game;
 	}
 	
 }
