@@ -1,10 +1,15 @@
 package UI;
 
-import java.awt.*;
+import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
 
 import kinasjakk.Board;
 import kinasjakk.Game;
@@ -13,18 +18,32 @@ public class SideBar extends JPanel {
 
 	BoardPane boardPane;
 	JButton button;
-	JTextField inputMoveFrom = new JTextField("0");
-	JTextField inputMoveTo = new JTextField("0");
+	JTextField inputMoveFrom = new JTextField("0", 5);
+	JTextField inputMoveTo = new JTextField("0", 5);
 	Game game;
 	
 	public SideBar(BoardPane boardPane) {
+		this.setLayout(new GridLayout(4, 1));
+		//History controls
+		JPanel history = new JPanel();
+		history.add(new JButton("<"));
+		history.add(new JLabel("Move: 0"));
+		history.add(new JButton(">"));
+		
+		//Execute move
+		JPanel executeMove = new JPanel();
 		this.boardPane = boardPane;
+		executeMove.add(new Label("Move from: "));
+		executeMove.add(inputMoveFrom);
+		executeMove.add(new Label("Move to: "));
+		executeMove.add(inputMoveTo);
 		button = new JButton("Make move");
-		this.add(button);
-		this.add(new Label("Move from: "));
-		this.add(inputMoveFrom);
-		this.add(new Label("Move to: "));
-		this.add(inputMoveTo);
+		executeMove.add(button);
+		
+		this.add(history);
+		this.add(new JSeparator());
+		this.add(executeMove);
+		this.add(new JSeparator());
 		button.addActionListener(new ActionListener() {
 
 			@Override
