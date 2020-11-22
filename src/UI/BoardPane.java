@@ -1,6 +1,10 @@
 package UI;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +26,7 @@ public class BoardPane extends JPanel {
 	
 	public BoardPane() {
 		loadImages();
-		bufferedImage = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
+		bufferedImage = new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_ARGB);
 		g = bufferedImage.getGraphics();
 		setBackground(Color.darkGray);
 	}
@@ -52,13 +56,13 @@ public class BoardPane extends JPanel {
         g.drawImage(boardImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
         if (board != null) {
         	List<Hex> hexes = board.getHexes();
-        	int d = 64;
+        	int d = 129;
         	int offset = d / 2;
         	for (Hex hex : hexes) {
 				int x = hex.getX();
 				int y = hex.getY();
-				int drawX = x * d - offset * y + 240;
-				int drawY = y * 56 + 50;
+				int drawX = x * d - offset * y + 480;
+				int drawY = y * 112 + 100;
         		if (!hex.isEmpty()) {
         			int playerId = hex.getPiece().getPlayer();
             		Color c = Color.GREEN;
@@ -72,13 +76,17 @@ public class BoardPane extends JPanel {
             				g, 
             				drawX,
             				drawY,
-            				50, 
+            				100, 
             				c
             		);
+    				g.setColor(Color.MAGENTA);
+        		}else {
+        			g.setColor(Color.WHITE);
         		}
-				g.setColor(Color.PINK);
-				g.setFont(g.getFont().deriveFont(30f));
-				g.drawString(String.valueOf(hex.id), drawX - g.getFont().getSize() / 2, drawY + 5);
+				g.setFont(g.getFont().deriveFont(Font.BOLD, 60f));
+				String hexId = String.valueOf(hex.id);
+				int size = g.getFontMetrics().stringWidth(hexId);
+				g.drawString(String.valueOf(hex.id), drawX - size / 2 - 2, drawY + 20);
         	}
         }
 	}
