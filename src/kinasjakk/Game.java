@@ -20,7 +20,7 @@ public class Game {
 	public void setBoard(Board board) {
 		this.board = board;
 	}
-	
+
 	public void loadBoardFromDisk(String boardName) {
 		Board b = new Board();
 		
@@ -53,14 +53,15 @@ public class Game {
 						int num = Integer.parseInt(p);
 						if (num == 0) hex.setPiece(null);
 						else hex.setPiece(new Piece(num));
-						//Update hex neighbors
-						lastLine.set(x, hex);
-						lastHex = hex;
 						if (lastLine.get(x) != null) {
 							hex.setNeighbour(Direction.TOP_LEFT, lastLine.get(x));
 						}else if (x+1 < lastLine.size() && lastLine.get(x+1) != null) {
 							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x+1));
 						}
+						//Update hex neighbors
+						lastLine.set(x, hex);
+						lastHex = hex;
+
 						b.addHex(hex);
 					}else {
 						lastLine.set(x, null);

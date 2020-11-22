@@ -35,7 +35,10 @@ public class Hex {
 	}
 
 	public void setNeighbour(Direction dir,  Hex otherHex) {
-		neighbours[dir.ordinal()] = otherHex;
+		if (neighbours[dir.ordinal()] == null) {
+			neighbours[dir.ordinal()] = otherHex;
+			otherHex.setNeighbour(Direction.opposite(dir), this);
+		}
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class Hex {
 
 	public List<Hex> possibleMovesInAllDirections(Hex currentJumpHex, List<Hex> possibleHexes) {
 		// Create a list off all possible hexes with one move
-		List<Hex> oneDepthHexes = new ArrayList<Hex>();
+		List<Hex> oneDepthHexes = new ArrayList<>();
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_LEFT, possibleHexes));
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_RIGHT, possibleHexes));
 		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.RIGHT, possibleHexes));
@@ -65,7 +68,7 @@ public class Hex {
 		oneDepthHexes.addAll(possibleHexes);
 
 		//
-		List<Hex> returnHex = new ArrayList<Hex>();
+		List<Hex> returnHex = new ArrayList<>();
 
 		for (Hex hex : oneDepthHexes) {
 			returnHex.addAll(possibleMovesInAllDirections(hex, oneDepthHexes));
@@ -89,8 +92,8 @@ public class Hex {
 
 	public List<Hex> getHexesInLine(Hex from, Direction d, List<Hex> blockedHexes) {
 
-		List<Hex> possibleMoves = new ArrayList<Hex>();
-		List<Hex> currentLine = new ArrayList<Hex>();
+		List<Hex> possibleMoves = new ArrayList<>();
+		List<Hex> currentLine = new ArrayList<>();
 		boolean lineContainsAPiece = false;
 		int last = 0;
 

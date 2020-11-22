@@ -23,6 +23,7 @@ public class MainFrame {
         frame.add(boardPane);
         frame.add(sideBar);
         frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         startNewGame();
 	}
 	
