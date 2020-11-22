@@ -97,6 +97,8 @@ public class Hex {
 		boolean lineContainsAPiece = false;
 		int last = 0;
 
+		System.out.println(from + ", " + d + ", " + blockedHexes);
+
 		while(currentLine.get(last) != null) {
 
 			Hex neighbor = from.neighbours[d.ordinal()];

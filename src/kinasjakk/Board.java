@@ -26,7 +26,7 @@ public class Board {
 		hexes.set(index, new Hex());
 
 		// Get all the possible moves with jumping
-		List<Hex> possibleMoves = startHex.possibleMovesInAllDirections(startHex, new ArrayList<Hex>());
+		List<Hex> possibleMoves = startHex.possibleMovesInAllDirections(startHex, new ArrayList<>());
 		List<Hex> oneDistanceHexes = startHex.getOneDistanceHexes();
 		List<Hex> uniqueOneDistanceHexes = new ArrayList<Hex>();
 		for (Hex hex : oneDistanceHexes) {
