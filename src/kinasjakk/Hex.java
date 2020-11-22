@@ -82,7 +82,7 @@ public class Hex {
 		List<Hex> oneDistanceHexes = new ArrayList<>();
 
 		for (Hex hex : neighbours) {
-			if (hex.isEmpty()) {
+			if (hex != null && hex.isEmpty()) {
 				oneDistanceHexes.add(hex);
 			}
 		}
@@ -97,11 +97,17 @@ public class Hex {
 		boolean lineContainsAPiece = false;
 		int last = 0;
 
-		System.out.println(from + ", " + d + ", " + blockedHexes);
+		// Add from to the current line
+		currentLine.add(from);
 
 		while(currentLine.get(last) != null) {
+			last = currentLine.size() - 1;
 
-			Hex neighbor = from.neighbours[d.ordinal()];
+			Hex neighbor = currentLine.get(last).neighbours[d.ordinal()];
+
+			System.out.println(neighbor + ", " + d + ", " + blockedHexes);
+
+			if(neighbor == null) break;
 
 			currentLine.add(neighbor);
 			if(!lineContainsAPiece && !neighbor.isEmpty()) {
@@ -131,8 +137,6 @@ public class Hex {
 						}
 					}
 				}
-
-				last++;
 			}
 		}
 
