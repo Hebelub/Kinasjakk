@@ -10,11 +10,13 @@ import kinasjakk.Board;
 import kinasjakk.Game;
 
 public class SideBar extends JPanel {
-	
+
+	BoardPane boardPane;
 	JButton button;
 	Game game;
 	
-	public SideBar() {
+	public SideBar(BoardPane boardPane) {
+		this.boardPane = boardPane;
 		button = new JButton("Make move");
 		this.add(button);
 		button.addActionListener(new ActionListener() {
@@ -28,6 +30,8 @@ public class SideBar extends JPanel {
 				System.out.println(b.getHexes().get(2));
 				b.getHexes().get(2).getPiece().setPlayer(6);
 				b.makeMove(b.getHexes().get(0), b.getHexes().get(2));
+
+				boardPane.repaint();
 			}
 			
 		});

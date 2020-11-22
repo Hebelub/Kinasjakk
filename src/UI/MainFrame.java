@@ -19,7 +19,7 @@ public class MainFrame {
 		frame.setSize(new Dimension(1000, 500));
 		frame.setLayout(new GridLayout(1, 2));
 		boardPane = new BoardPane();
-		sideBar = new SideBar();
+		sideBar = new SideBar(boardPane);
         frame.add(boardPane);
         frame.add(sideBar);
         frame.setVisible(true);

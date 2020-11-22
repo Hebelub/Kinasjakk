@@ -1,7 +1,6 @@
 package UI;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +55,10 @@ public class BoardPane extends JPanel {
         	int d = 64;
         	int offset = d / 2;
         	for (Hex hex : hexes) {
+				int x = hex.getX();
+				int y = hex.getY();
+				int drawX = x * d - offset * y + 240;
+				int drawY = y * 56 + 50;
         		if (!hex.isEmpty()) {
         			int playerId = hex.getPiece().getPlayer();
             		Color c = Color.GREEN;
@@ -65,16 +68,17 @@ public class BoardPane extends JPanel {
             		if (playerId == 4) c = Color.BLUE;
             		if (playerId == 5) c = Color.RED;
             		if (playerId == 6) c = Color.YELLOW;
-        			int x = hex.getX();
-            		int y = hex.getY();
             		drawCenteredCircle(
             				g, 
-            				x * d - offset * y + 240,
-            				y * 56 + 50, 
+            				drawX,
+            				drawY,
             				50, 
             				c
             		);
         		}
+				g.setColor(Color.PINK);
+				g.setFont(g.getFont().deriveFont(30f));
+				g.drawString(String.valueOf(hex.id), drawX - g.getFont().getSize() / 2, drawY + 5);
         	}
         }
 	}

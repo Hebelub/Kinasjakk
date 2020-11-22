@@ -40,6 +40,7 @@ public class Game {
 			while(line != null) {
 				Hex lastHex = null;
 				String[] positions = line.split("");
+				ArrayList<Hex> currentLine = new ArrayList<Hex>(rowLength);
 				for(int x = 0; x < rowLength; x++) {
 					String p = positions[x];
 					//If part of board
@@ -60,18 +61,19 @@ public class Game {
 						}
 
 						if(lastHex != null){
-							hex.setNeighbour(Direction.RIGHT, lastHex);
+							hex.setNeighbour(Direction.LEFT, lastHex);
 						}
 						//Update hex neighbors
-						lastLine.set(x, hex);
+						currentLine.add(hex);
 						lastHex = hex;
 
 						b.addHex(hex);
 					}else {
-						lastLine.set(x, null);
+						currentLine.add(null);
 						lastHex = null;
 					}
 				}
+				lastLine = currentLine;
 				y++;
 				line = reader.readLine();
 			}
