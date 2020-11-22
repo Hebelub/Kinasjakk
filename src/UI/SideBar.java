@@ -24,8 +24,10 @@ public class SideBar extends JPanel {
 				Board b = game.getBoard();
 				System.out.println(b.getHexes().size());
 				System.out.println(b.getHexes().get(0));
-				System.out.println(b.getHexes().get(40));
-				b.makeMove(b.getHexes().get(0), b.getHexes().get(40));
+				System.out.println(b.getHexes().get(1));
+				System.out.println(b.getHexes().get(2));
+				b.getHexes().get(2).getPiece().setPlayer(6);
+				b.makeMove(b.getHexes().get(0), b.getHexes().get(2));
 			}
 			
 		});

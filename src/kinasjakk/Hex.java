@@ -43,12 +43,12 @@ public class Hex {
 
 	@Override
 	public String toString() {
-		int[] ids = new int[6];
+		String[] ids = new String[6];
 		for (int i = 0; i < neighbours.length; i++) {
+			String id = "null";
 			if (neighbours[i] != null)
-				ids[i] = neighbours[i].id;
-			else 
-				ids[i] = -1;
+				id = String.valueOf(neighbours[i].id);
+			ids[i] = String.valueOf(Direction.values()[i]) + "=" + id;
 		}
 		return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
@@ -99,7 +99,7 @@ public class Hex {
 
 		while(currentLine.get(last) != null) {
 
-			Hex neighbor = neighbours[d.ordinal()];
+			Hex neighbor = from.neighbours[d.ordinal()];
 
 			currentLine.add(neighbor);
 			if(!lineContainsAPiece && !neighbor.isEmpty()) {

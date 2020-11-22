@@ -54,9 +54,13 @@ public class Game {
 						if (num == 0) hex.setPiece(null);
 						else hex.setPiece(new Piece(num));
 						if (lastLine.get(x) != null) {
-							hex.setNeighbour(Direction.TOP_LEFT, lastLine.get(x));
-						}else if (x+1 < lastLine.size() && lastLine.get(x+1) != null) {
-							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x+1));
+							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x));
+						}else if (x-1 >= 0 && lastLine.get(x-1) != null) {
+							hex.setNeighbour(Direction.TOP_LEFT, lastLine.get(x-1));
+						}
+
+						if(lastHex != null){
+							hex.setNeighbour(Direction.RIGHT, lastHex);
 						}
 						//Update hex neighbors
 						lastLine.set(x, hex);
