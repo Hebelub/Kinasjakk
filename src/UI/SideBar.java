@@ -57,7 +57,10 @@ public class SideBar extends JPanel {
 					debug += hex.id + " ";
 				}
 
-				System.out.println(debug);
+				//System.out.println(debug);
+
+				possibleMoves.setText(debug);
+
 			}
 		});
 

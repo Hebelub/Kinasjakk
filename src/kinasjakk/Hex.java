@@ -68,16 +68,14 @@ public class Hex {
 		blockedHexes.addAll(hexesToTestFrom);
 
 		while(true) {
-			// System.out.println("In the while");
 			for(Hex hex : hexesToTestFrom) {
 				List<Hex> hexesInAllDirections = testInAllDirectionsFrom(hex, blockedHexes);
-				// System.out.println("In the for --> hexesInAllDirections.size(): " + hexesInAllDirections.size());
+
 				hexesToTestFromAfter.addAll(hexesInAllDirections);
 				blockedHexes.addAll(hexesInAllDirections);
 			}
 
 			if(hexesToTestFromAfter.size() > 0) {
-				// System.out.println("If happened");
 				hexesToTestFrom = hexesToTestFromAfter;
 				hexesToTestFromAfter = new ArrayList<>();
 			}
@@ -133,8 +131,6 @@ public class Hex {
 
 			Hex nextNeighbor = currentLine.get(last).neighbours[d.ordinal()];
 
-		//	System.out.println("It is breaking out if nextNeighbor: " + nextNeighbor);
-
 			// If it is was at the last neighbor break out!
 			if(nextNeighbor == null) {
 				break;
@@ -166,27 +162,25 @@ public class Hex {
 
 					int toMiddle = (last - 1) / 2;
 
-					System.out.println("Inside: " + currentLine + ", toMiddle: " + toMiddle);
+				//	System.out.println("Inside: " + currentLine + ", toMiddle: " + toMiddle);
 
 					boolean hasSymmetry = true;
 					for(int i = 1; i <= toMiddle; i++) {
 
 						if(currentLine.get(i).isEmpty() != currentLine.get(last - i).isEmpty()) {
-							System.out.println(currentLine.get(i) + " ---><--- " + currentLine.get(last -i));
+				//			System.out.println(currentLine.get(i) + " ---><--- " + currentLine.get(last -i));
 							hasSymmetry = false;
 							break;
 						}
 					}
 					if(hasSymmetry) {
-						System.out.println("Found a possible move at: " + nextNeighbor.toString());
+				//		System.out.println("Found a possible move at: " + nextNeighbor.toString());
 						possibleMoves.add(nextNeighbor);
 
 					}
 				}
 			}
 		}
-
-		// System.out.println("At the end --> PossibleMoves.size(): " + possibleMoves.size() + " From: " + from + ", direction: " + d + ", blockedHexes.size(): " + blockedHexes.size());
 
 		return possibleMoves;
 	}
