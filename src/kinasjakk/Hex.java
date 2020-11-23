@@ -50,44 +50,58 @@ public class Hex {
 				id = String.valueOf(neighbours[i].id);
 			ids[i] = String.valueOf(Direction.values()[i]) + "=" + id;
 		}
-		return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
+		return "" + id + " " + isEmpty();
+		// return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
-	public List<Hex> getPossibleJumpingHexesFrom(Hex hex) {
-		List<Hex> possibleHexes = new ArrayList<>();
-		possibleHexes.add(hex);
+	// Returns all the possible hexes a piece can jump to from any given Hex
+	public List<Hex> possibleHexesFrom(Hex from) {
 
-		List<Hex> possibleHexes1 = recursivePossibleHexes(hex, possibleHexes);
-		possibleHexes1.remove(hex);
-		return possibleHexes1;
+		// Creating list to test for and adding the first position to it
+		List<Hex> hexesToTestFrom = new ArrayList<>();
+		hexesToTestFrom.add(from);
+		// Hexes to test after all in hexesToTestFrom is tested
+		List<Hex> hexesToTestFromAfter = new ArrayList<>();
+		// Create a list of all tested positions
+		List<Hex> blockedHexes = new ArrayList<>();
 
-	}
+		blockedHexes.addAll(hexesToTestFrom);
 
-	private List<Hex> recursivePossibleHexes(Hex currentJumpHex, List<Hex> possibleHexes) {
-		// Create a list off all possible hexes with only one jump
-		List<Hex> oneDepthHexes = new ArrayList<>();
+		while(true) {
+			// System.out.println("In the while");
+			for(Hex hex : hexesToTestFrom) {
+				List<Hex> hexesInAllDirections = testInAllDirectionsFrom(hex, blockedHexes);
+				// System.out.println("In the for --> hexesInAllDirections.size(): " + hexesInAllDirections.size());
+				hexesToTestFromAfter.addAll(hexesInAllDirections);
+				blockedHexes.addAll(hexesInAllDirections);
+			}
 
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_LEFT, possibleHexes));
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.TOP_RIGHT, possibleHexes));
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.RIGHT, possibleHexes));
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.BOTTOM_RIGHT, possibleHexes));
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.BOTTOM_LEFT, possibleHexes));
-		oneDepthHexes.addAll(getHexesInLine(currentJumpHex, Direction.LEFT, possibleHexes));
-
-		// If it can not jump anywhere from currentJumpHex, return possibleHexes
-		if(oneDepthHexes.size() == 0) return possibleHexes;
-		// Adds all the oneDepthHexes to possibleHexes
-		possibleHexes.addAll(oneDepthHexes);
-
-	//	// Creates a list to return
-	//	List<Hex> returnHexes = new ArrayList<>();
-		//
-		for (Hex hex : oneDepthHexes) {
-			possibleHexes.addAll(recursivePossibleHexes(hex, possibleHexes));
+			if(hexesToTestFromAfter.size() > 0) {
+				// System.out.println("If happened");
+				hexesToTestFrom = hexesToTestFromAfter;
+				hexesToTestFromAfter = new ArrayList<>();
+			}
+			else break;
 		}
 
-		return possibleHexes;
+		// Removes the Hex that is the startingHex
+		blockedHexes.remove(0);
 
+		return blockedHexes;
+
+	}
+
+	private List<Hex> testInAllDirectionsFrom(Hex from, List<Hex> blockedHexes) {
+		List<Hex> possibleHexesFromPosition = new ArrayList<>();
+
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.TOP_LEFT, blockedHexes));
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.TOP_RIGHT, blockedHexes));
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.RIGHT, blockedHexes));
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.BOTTOM_RIGHT, blockedHexes));
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.BOTTOM_LEFT, blockedHexes));
+		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.LEFT, blockedHexes));
+
+		return possibleHexesFromPosition;
 	}
 
 	public List<Hex> getOneDistanceHexes() {
@@ -104,56 +118,75 @@ public class Hex {
 
 	public List<Hex> getHexesInLine(Hex from, Direction d, List<Hex> blockedHexes) {
 
+		// The list to return
 		List<Hex> possibleMoves = new ArrayList<>();
+		// The line that is building it selves longer and longer
 		List<Hex> currentLine = new ArrayList<>();
-		boolean lineContainsAPiece = false;
-		int last = 0;
-
+		// When currentLine gets the first piece, this will turn true
+		boolean lineContainsAPiece = false; // No hex can jump without a piece
 		// Add from to the current line
 		currentLine.add(from);
+		// The last index of the current line
+		int last = 0;
 
 		while(currentLine.get(last) != null) {
+
+			Hex nextNeighbor = currentLine.get(last).neighbours[d.ordinal()];
+
+		//	System.out.println("It is breaking out if nextNeighbor: " + nextNeighbor);
+
+			// If it is was at the last neighbor break out!
+			if(nextNeighbor == null) {
+				break;
+			}
+
+			// Adding to the line and recalculating the last index
+			currentLine.add(nextNeighbor);
 			last = currentLine.size() - 1;
 
-			Hex neighbor = currentLine.get(last).neighbours[d.ordinal()];
-
-			int id = 0;
-			if(neighbor == null) id = -1;
-			else id = neighbor.id;
-		//	System.out.println("Hex: " + id + ", " + d + ", " + blockedHexes);
-
-			if(neighbor == null) break;
-
-			currentLine.add(neighbor);
-			if(!lineContainsAPiece && !neighbor.isEmpty()) {
+			// Sets lineContainsAPiece if the line now contains a piece
+			if(!lineContainsAPiece && !nextNeighbor.isEmpty()) {
 				lineContainsAPiece = true;
 			}
 
-			if (neighbor.isEmpty() && lineContainsAPiece) {
-
+			// Checks if nextNeighbor is a plausible hex to jump to
+			if (nextNeighbor.isEmpty() && lineContainsAPiece) {
+				// Breaks out if the position is blocked
 				boolean isBlocked = false;
-				for (Hex hex : blockedHexes) {
-					if (this == hex) {
+				for (Hex blocked : blockedHexes) {
+					if (nextNeighbor == blocked) {
 						isBlocked = true;
 						break;
 					}
 				}
 
+				// Checks symmetry if the line is not blocked
 				if (!isBlocked) {
 
-					for(int i = 1; i < Math.floor((last - 2) / 2); i++) {
 
-						if(currentLine.get(i) != currentLine.get(last - i)) {
+					int toMiddle = (last - 1) / 2;
 
+					System.out.println("Inside: " + currentLine + ", toMiddle: " + toMiddle);
+
+					boolean hasSymmetry = true;
+					for(int i = 1; i <= toMiddle; i++) {
+
+						if(currentLine.get(i).isEmpty() != currentLine.get(last - i).isEmpty()) {
+							System.out.println(currentLine.get(i) + " ---><--- " + currentLine.get(last -i));
+							hasSymmetry = false;
 							break;
 						}
-						else if(i == Math.floor((last - 2) / 2)) {
-							possibleMoves.add(currentLine.get(last));
-						}
+					}
+					if(hasSymmetry) {
+						System.out.println("Found a possible move at: " + nextNeighbor.toString());
+						possibleMoves.add(nextNeighbor);
+
 					}
 				}
 			}
 		}
+
+		// System.out.println("At the end --> PossibleMoves.size(): " + possibleMoves.size() + " From: " + from + ", direction: " + d + ", blockedHexes.size(): " + blockedHexes.size());
 
 		return possibleMoves;
 	}
