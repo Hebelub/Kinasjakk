@@ -34,13 +34,13 @@ public class Game {
 			int rowLength = line.split("").length;
 			//Initialize array of hexes for the previous readLine()
 			//and fill with null
-			ArrayList<Hex> lastLine = new ArrayList<Hex>(rowLength);
+			ArrayList<Hex> lastLine = new ArrayList<>(rowLength);
 			for(int i = 0; i < rowLength; i++) lastLine.add(null);
 			int y = 0;
 			while(line != null) {
 				Hex lastHex = null;
 				String[] positions = line.split("");
-				ArrayList<Hex> currentLine = new ArrayList<Hex>(rowLength);
+				ArrayList<Hex> currentLine = new ArrayList<>(rowLength);
 				for(int x = 0; x < rowLength; x++) {
 					String p = positions[x];
 					//If part of board
@@ -56,7 +56,8 @@ public class Game {
 						else hex.setPiece(new Piece(num));
 						if (lastLine.get(x) != null) {
 							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x));
-						}else if (x-1 >= 0 && lastLine.get(x-1) != null) {
+						}
+						if (x-1 >= 0 && lastLine.get(x-1) != null) {
 							hex.setNeighbour(Direction.TOP_LEFT, lastLine.get(x-1));
 						}
 
