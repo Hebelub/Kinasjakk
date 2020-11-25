@@ -4,9 +4,13 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import kinasjakk.Board;
 import kinasjakk.Game;
@@ -17,8 +21,7 @@ public class SideBar extends JPanel {
 	BoardPane boardPane;
 	JButton button;
 	JTextField inputMoveFrom = new JTextField("0", 5);
-	JTextField inputMoveTo = new JTextField("0", 5);
-	JTextArea possibleMoves = new JTextArea("Possible Moves");
+	JComboBox<Integer> inputMoveTo = new JComboBox<>();
 	Game game;
 	
 	public SideBar(BoardPane boardPane) {
@@ -38,28 +41,35 @@ public class SideBar extends JPanel {
 		executeMove.add(inputMoveTo);
 		button = new JButton("Make move");
 		executeMove.add(button);
-		executeMove.add(possibleMoves);
 
 		this.add(history);
 		this.add(new JSeparator());
 		this.add(executeMove);
 		this.add(new JSeparator());
 
-		inputMoveFrom.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		// Listen for changes in the text
+		inputMoveFrom.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) { warn(); }
+			public void removeUpdate(DocumentEvent e) { warn();	}
+			public void insertUpdate(DocumentEvent e) { warn();	}
 
-				Hex fromHex = game.getBoard().getHexes().get(Integer.parseInt(inputMoveFrom.getText()));
-				List<Hex> possibleHexes = game.getBoard().getPossibleHexesFrom(fromHex);
+			public void warn() {
+				try {
+					Hex fromHex = game.getBoard().getHexes().get(Integer.parseInt(inputMoveFrom.getText()));
+					List<Hex> possibleHexes = game.getBoard().getPossibleHexesFrom(fromHex);
 
-				String debug = "";
-				for(Hex hex : possibleHexes) {
-					debug += hex.id + " ";
-				}
+					// getting existing combo box model
+					DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
+					// removing old data
+					model.removeAllElements();
 
-				//System.out.println(debug);
+					for(Hex hex : possibleHexes) {
+						model.addElement(hex.id);
+					}
 
-				possibleMoves.setText(debug);
+					inputMoveTo.setModel(model);
+
+				} catch (Exception e) { }
 
 			}
 		});
@@ -70,9 +80,13 @@ public class SideBar extends JPanel {
 				Board b = game.getBoard();
 
 				int from = Integer.parseInt(inputMoveFrom.getText());
-				int to = Integer.parseInt(inputMoveTo.getText());
+				int to = (int)inputMoveTo.getSelectedItem();
 				inputMoveFrom.setText("");
-				inputMoveTo.setText("");
+
+				// getting exiting combo box model
+				DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
+				// removing old data
+				model.removeAllElements();
 
 				b.makeMove(b.getHexes().get(from), b.getHexes().get(to));
 
