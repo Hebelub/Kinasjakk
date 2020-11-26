@@ -92,12 +92,12 @@ public class Hex {
 	private List<Hex> testInAllDirectionsFrom(Hex from, List<Hex> blockedHexes) {
 		List<Hex> possibleHexesFromPosition = new ArrayList<>();
 
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.TOP_LEFT, blockedHexes));
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.TOP_RIGHT, blockedHexes));
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.RIGHT, blockedHexes));
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.BOTTOM_RIGHT, blockedHexes));
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.BOTTOM_LEFT, blockedHexes));
-		possibleHexesFromPosition.addAll(getHexesInLine(from, Direction.LEFT, blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.TOP_LEFT), blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.TOP_RIGHT), blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.RIGHT), blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.BOTTOM_RIGHT), blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.BOTTOM_LEFT), blockedHexes));
+		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.LEFT), blockedHexes));
 
 		return possibleHexesFromPosition;
 	}
@@ -114,75 +114,61 @@ public class Hex {
 		return oneDistanceHexes;
 	}
 
-	public List<Hex> getHexesInLine(Hex from, Direction d, List<Hex> blockedHexes) {
+	public Hex getNeighbor(Direction d) {
+		return neighbours[d.ordinal()];
+	}
 
-		// The list to return
+	public List<Hex> getAvailableHexesInLineFrom(PointingHex from, List<Hex> blockedHexes) {
+
+		List<Hex> hexLine = from.getHexLine();
+
 		List<Hex> possibleMoves = new ArrayList<>();
-		// The line that is building it selves longer and longer
-		List<Hex> currentLine = new ArrayList<>();
-		// When currentLine gets the first piece, this will turn true
-		boolean lineContainsAPiece = false; // No hex can jump without a piece
-		// Add from to the current line
-		currentLine.add(from);
-		// The last index of the current line
-		int last = 0;
 
-		while(currentLine.get(last) != null) {
+		boolean hasIteratedOverAPiece = false; // No hex can jump without at least one piece between
 
-			Hex nextNeighbor = currentLine.get(last).neighbours[d.ordinal()];
+		int checkToDynamic = hexLine.size() / 2;
 
-			// If it is was at the last neighbor break out!
-			if(nextNeighbor == null) {
-				break;
-			}
+		for(int end = 1; end < checkToDynamic; end++) {
 
-			// Adding to the line and recalculating the last index
-			currentLine.add(nextNeighbor);
-			last = currentLine.size() - 1;
+			Hex endHex = hexLine.get(end);
 
-			// Sets lineContainsAPiece if the line now contains a piece
-			if(!lineContainsAPiece && !nextNeighbor.isEmpty()) {
-				lineContainsAPiece = true;
-			}
-
-			// Checks if nextNeighbor is a plausible hex to jump to
-			if (nextNeighbor.isEmpty() && lineContainsAPiece) {
-				// Breaks out if the position is blocked
-				boolean isBlocked = false;
-				for (Hex blocked : blockedHexes) {
-					if (nextNeighbor == blocked) {
-						isBlocked = true;
-						break;
+			if(hasIteratedOverAPiece) {
+				if(endHex.isEmpty() && !isHexInBlockedList(endHex, blockedHexes)) {
+					if(LineSegmentHasSymmetry(hexLine, end)) {
+						possibleMoves.add(endHex);
+						end += end - 1; // Skipping impossible iterations
 					}
 				}
-
-				// Checks symmetry if the line is not blocked
-				if (!isBlocked) {
-
-
-					int toMiddle = (last - 1) / 2;
-
-				//	System.out.println("Inside: " + currentLine + ", toMiddle: " + toMiddle);
-
-					boolean hasSymmetry = true;
-					for(int i = 1; i <= toMiddle; i++) {
-
-						if(currentLine.get(i).isEmpty() != currentLine.get(last - i).isEmpty()) {
-				//			System.out.println(currentLine.get(i) + " ---><--- " + currentLine.get(last -i));
-							hasSymmetry = false;
-							break;
-						}
-					}
-					if(hasSymmetry) {
-				//		System.out.println("Found a possible move at: " + nextNeighbor.toString());
-						possibleMoves.add(nextNeighbor);
-
-					}
-				}
+			}
+			else if(!endHex.isEmpty()) {
+				checkToDynamic = hexLine.size();
+				end += end - 1; // Skipping impossible iterations
+				hasIteratedOverAPiece = true;
 			}
 		}
 
 		return possibleMoves;
+	}
+
+	private Boolean LineSegmentHasSymmetry(List<Hex> hexLine, int end) {
+		int toMiddle = (end - 1) / 2;
+
+		for(int i = 1; i <= toMiddle; i++) {
+			if(hexLine.get(i).isEmpty() != hexLine.get(end - i).isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isHexInBlockedList(Hex hex, List<Hex> blockedHexes) {
+		for (Hex blocked : blockedHexes) {
+			if (hex == blocked) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isEmpty() {
