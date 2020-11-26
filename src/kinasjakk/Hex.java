@@ -3,7 +3,14 @@ package kinasjakk;
 import java.util.*;
 import java.util.List;
 
-public class Hex {
+public class Hex implements Comparable<Hex> {
+
+	@Override
+	public int compareTo(Hex compareId) {
+
+		return this.id - compareId.id;
+	}
+
 	private static int nextId = 0;
 	public int id;
 	private Piece piece;
@@ -50,46 +57,50 @@ public class Hex {
 				id = String.valueOf(neighbours[i].id);
 			ids[i] = String.valueOf(Direction.values()[i]) + "=" + id;
 		}
-		return "" + id + " " + isEmpty();
+		return "" + id + " " + hasPiece();
 		// return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
-	// Returns all the possible hexes a piece can jump to from any given Hex
-	public List<Hex> possibleHexesFrom(Hex from) {
+	public List<Hex> getPossibleHexes() {
 
-		// Creating list to test for and adding the first position to it
-		List<Hex> hexesToTestFrom = new ArrayList<>();
-		hexesToTestFrom.add(from);
-		// Hexes to test after all in hexesToTestFrom is tested
-		List<Hex> hexesToTestFromAfter = new ArrayList<>();
-		// Create a list of all tested positions
-		List<Hex> blockedHexes = new ArrayList<>();
+		Piece piece = getPiece();
+		setPiece(null); // Temporarily removing piece
 
-		blockedHexes.addAll(hexesToTestFrom);
+		List<Hex> untestedHexes = new ArrayList<>();
+		List<Hex> possibleHexes = new ArrayList<>();
 
-		while(true) {
-			for(Hex hex : hexesToTestFrom) {
-				List<Hex> hexesInAllDirections = testInAllDirectionsFrom(hex, blockedHexes);
+		untestedHexes.add(this);
+		possibleHexes.add(this); // This is removed at the end
 
-				hexesToTestFromAfter.addAll(hexesInAllDirections);
-				blockedHexes.addAll(hexesInAllDirections);
-			}
+		testAllHexes(untestedHexes, possibleHexes);
 
-			if(hexesToTestFromAfter.size() > 0) {
-				hexesToTestFrom = hexesToTestFromAfter;
-				hexesToTestFromAfter = new ArrayList<>();
-			}
-			else break;
-		}
+		possibleHexes.remove(0); // Removes the Hex that is the from-Hex
 
-		// Removes the Hex that is the startingHex
-		blockedHexes.remove(0);
+		possibleHexes.addAll(getOneDistanceHexes(possibleHexes));
 
-		return blockedHexes;
-
+		setPiece(piece);
+		return possibleHexes;
 	}
 
-	private List<Hex> testInAllDirectionsFrom(Hex from, List<Hex> blockedHexes) {
+	private void testAllHexes(List<Hex> untestedHexes, List<Hex> testedHexes) {
+		while(true) {
+			untestedHexes = getAvailableHexesInAllDirectionsFromHexes(untestedHexes, testedHexes);
+
+			if(untestedHexes.size() > 0) {
+				testedHexes.addAll(untestedHexes);
+			} else break;
+		}
+	}
+
+	private List<Hex> getAvailableHexesInAllDirectionsFromHexes(List<Hex> untestedHexes, List<Hex> blockedHexes) {
+		List<Hex> hexesInAllDirections = new ArrayList<>();
+		for(Hex hex : untestedHexes) {
+			hexesInAllDirections.addAll(getAvailableHexesInAllDirectionsFrom(hex, blockedHexes));
+		}
+		return hexesInAllDirections;
+	}
+
+	private List<Hex> getAvailableHexesInAllDirectionsFrom(Hex from, List<Hex> blockedHexes) {
 		List<Hex> possibleHexesFromPosition = new ArrayList<>();
 
 		possibleHexesFromPosition.addAll(getAvailableHexesInLineFrom(new PointingHex(from, Direction.TOP_LEFT), blockedHexes));
@@ -102,11 +113,12 @@ public class Hex {
 		return possibleHexesFromPosition;
 	}
 
-	public List<Hex> getOneDistanceHexes() {
+	public List<Hex> getOneDistanceHexes(List<Hex> blockedHexes) {
+
 		List<Hex> oneDistanceHexes = new ArrayList<>();
 
 		for (Hex hex : neighbours) {
-			if (hex != null && hex.isEmpty()) {
+			if (hex != null && hex.isEmpty() && !isHexInBlockedList(hex, blockedHexes)) {
 				oneDistanceHexes.add(hex);
 			}
 		}
@@ -126,7 +138,7 @@ public class Hex {
 
 		boolean hasIteratedOverAPiece = false; // No hex can jump without at least one piece between
 
-		int checkToDynamic = hexLine.size() / 2;
+		int checkToDynamic = (hexLine.size() + 1) / 2;
 
 		for(int end = 1; end < checkToDynamic; end++) {
 
@@ -140,7 +152,7 @@ public class Hex {
 					}
 				}
 			}
-			else if(!endHex.isEmpty()) {
+			else if(endHex.hasPiece()) {
 				checkToDynamic = hexLine.size();
 				end += end - 1; // Skipping impossible iterations
 				hasIteratedOverAPiece = true;
@@ -154,7 +166,7 @@ public class Hex {
 		int toMiddle = (end - 1) / 2;
 
 		for(int i = 1; i <= toMiddle; i++) {
-			if(hexLine.get(i).isEmpty() != hexLine.get(end - i).isEmpty()) {
+			if(hexLine.get(i).hasPiece() != hexLine.get(end - i).hasPiece()) {
 				return false;
 			}
 		}
@@ -173,6 +185,10 @@ public class Hex {
 
 	public boolean isEmpty() {
 		return piece == null;
+	}
+
+	public boolean hasPiece() {
+		return !(piece == null);
 	}
 
 	public Piece getPiece() {

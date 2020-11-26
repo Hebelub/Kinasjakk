@@ -5,7 +5,10 @@ import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.*;
@@ -57,6 +60,7 @@ public class SideBar extends JPanel {
 				try {
 					Hex fromHex = game.getBoard().getHexes().get(Integer.parseInt(inputMoveFrom.getText()));
 					List<Hex> possibleHexes = game.getBoard().getPossibleHexesFrom(fromHex);
+					Collections.sort(possibleHexes);
 
 					// getting existing combo box model
 					DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
@@ -83,7 +87,7 @@ public class SideBar extends JPanel {
 				int to = (int)inputMoveTo.getSelectedItem();
 				inputMoveFrom.setText("");
 
-				// getting exiting combo box model
+				// getting existing combo box model
 				DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
 				// removing old data
 				model.removeAllElements();

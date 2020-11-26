@@ -5,9 +5,9 @@ import java.util.List;
 
 public class PointingHex {
 
-    public Hex hex;
+    private Hex hex;
 
-    public Direction direction;
+    private Direction direction;
 
     PointingHex(Hex hex, Direction direction) {
         this.hex = hex;
@@ -34,5 +34,21 @@ public class PointingHex {
         }
 
         return line;
+    }
+
+    public Hex getHex() {
+        return hex;
+    }
+
+    public void setHex(Hex hex) {
+        this.hex = hex;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 }
