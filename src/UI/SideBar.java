@@ -28,6 +28,7 @@ public class SideBar extends JPanel {
 	Game game;
 	
 	public SideBar(BoardPane boardPane) {
+
 		this.setLayout(new GridLayout(4, 1));
 		//History controls
 		JPanel history = new JPanel();

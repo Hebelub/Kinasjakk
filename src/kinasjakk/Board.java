@@ -20,10 +20,7 @@ public class Board {
 	}
 
 	public List<Hex> getPossibleHexesFrom(Hex startHex) {
-
-		List<Hex> possibleMoves = startHex.getPossibleHexes();
-
-		return possibleMoves;
+		return startHex.new Moves().getPossibleHexes();
 	}
 
 	public void makeMove(Hex from, Hex to) {
