@@ -18,6 +18,7 @@ import javax.swing.event.DocumentListener;
 import kinasjakk.Board;
 import kinasjakk.Game;
 import kinasjakk.Hex;
+import kinasjakk.HexJump;
 
 public class SideBar extends JPanel {
 

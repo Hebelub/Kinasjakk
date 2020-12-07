@@ -1,6 +1,8 @@
 package kinasjakk;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Player {
@@ -8,6 +10,10 @@ public class Player {
     private String name;
     private boolean isHuman;
     private Color color;
+
+    private List<Hex> startHexes = new ArrayList<>();
+    private List<Hex> winHexes = new ArrayList<>();
+    private List<Piece> pieces = new ArrayList<>();
 
     public Player() {
         name = "New Player";

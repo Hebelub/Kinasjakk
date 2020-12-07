@@ -61,18 +61,43 @@ public class Hex implements Comparable<Hex> {
 		// return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
+	public Hex getNeighbor(Direction d) {
+		return neighbours[d.ordinal()];
+	}
+	public Hex getNeighbor(int d) {
+		return neighbours[d];
+	}
+
+	public boolean isEmpty() {
+		return piece == null;
+	}
+
+	public boolean hasPiece() {
+		return !(piece == null);
+	}
+
+	public Piece getPiece() {
+		return piece;
+	}
+
+	public void setPiece(Piece piece) {
+		this.piece = piece;
+	}
+
+
+
 	public class Moves {
 
-		List<Hex> testedHexes;
+		List<Hex> possibleHexes;
 		List<Hex> hexesToTest;
 
 		Moves() {
-			testedHexes = new ArrayList<>();
+			possibleHexes = new ArrayList<>();
 			hexesToTest = new ArrayList<>();
 		}
 
 		private void addHexToLists() {
-			testedHexes.add(Hex.this);
+			possibleHexes.add(Hex.this);
 			hexesToTest.add(Hex.this); // This is removed at the end
 		}
 
@@ -86,20 +111,17 @@ public class Hex implements Comparable<Hex> {
 			addJumpHexes();
 			addOneDistanceHexes();
 
-			testedHexes.remove(0); // Removes Hex.this from List
+			possibleHexes.remove(0); // Removes Hex.this from List
 
 			setPiece(piece);
 
-			return testedHexes;
+			return possibleHexes;
 		}
 
 		private void addJumpHexes() {
-			while(true) {
+			while(hexesToTest.size() > 0) {
 				hexesToTest = getAvailableHexesInAllDirectionsFromHexes();
-
-				if(hexesToTest.size() > 0) {
-					testedHexes.addAll(hexesToTest);
-				} else break;
+				possibleHexes.addAll(hexesToTest);
 			}
 		}
 
@@ -124,19 +146,6 @@ public class Hex implements Comparable<Hex> {
 			return possibleHexesFromPosition;
 		}
 
-		public void addOneDistanceHexes() {
-
-			List<Hex> oneDistanceHexes = new ArrayList<>();
-
-			for (Hex hex : neighbours) {
-				if (hex != null && hex.isEmpty() && !isHexInBlockedList(hex)) {
-					oneDistanceHexes.add(hex);
-				}
-			}
-
-			testedHexes.addAll(oneDistanceHexes);
-		}
-
 		public List<Hex> getAvailableHexesInLineFrom(PointingHex from) {
 
 			List<Hex> hexLine = from.getHexLine();
@@ -145,9 +154,9 @@ public class Hex implements Comparable<Hex> {
 
 			boolean hasIteratedOverAPiece = false; // No hex can jump without at least one piece between
 
-			int checkToDynamic = (hexLine.size() + 1) / 2;
+			int checkUntil = (hexLine.size() + 1) / 2;
 
-			for(int end = 1; end < checkToDynamic; end++) {
+			for(int end = 1; end < checkUntil; end++) {
 
 				Hex endHex = hexLine.get(end);
 
@@ -160,7 +169,7 @@ public class Hex implements Comparable<Hex> {
 					}
 				}
 				else if(endHex.hasPiece()) {
-					checkToDynamic = hexLine.size();
+					checkUntil = hexLine.size();
 					end += end - 1; // Skipping impossible iterations
 					hasIteratedOverAPiece = true;
 				}
@@ -169,8 +178,21 @@ public class Hex implements Comparable<Hex> {
 			return possibleMoves;
 		}
 
+		public void addOneDistanceHexes() {
+
+			List<Hex> oneDistanceHexes = new ArrayList<>();
+
+			for (Hex hex : neighbours) {
+				if (hex != null && hex.isEmpty() && !isHexInBlockedList(hex)) {
+					oneDistanceHexes.add(hex);
+				}
+			}
+
+			possibleHexes.addAll(oneDistanceHexes);
+		}
+
 		private boolean isHexInBlockedList(Hex hex) {
-			for (Hex blocked : testedHexes) {
+			for (Hex blocked : possibleHexes) {
 				if (hex == blocked) {
 					return true;
 				}
@@ -239,27 +261,5 @@ public class Hex implements Comparable<Hex> {
 				this.direction = direction;
 			}
 		}
-
-
-	}
-
-	public Hex getNeighbor(Direction d) {
-		return neighbours[d.ordinal()];
-	}
-
-	public boolean isEmpty() {
-		return piece == null;
-	}
-
-	public boolean hasPiece() {
-		return !(piece == null);
-	}
-
-	public Piece getPiece() {
-		return piece;
-	}
-
-	public void setPiece(Piece piece) {
-		this.piece = piece;
 	}
 }

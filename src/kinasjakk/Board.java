@@ -8,7 +8,7 @@ public class Board {
 	List<Hex> hexes;
 	
 	public Board() {
-		hexes = new ArrayList<Hex>();
+		hexes = new ArrayList<>();
 	}
 	
 	public void addHex(Hex hex) {
