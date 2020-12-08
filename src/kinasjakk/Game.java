@@ -1,16 +1,31 @@
 package kinasjakk;
 
+import javax.print.attribute.standard.NumberOfDocuments;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Game {
 	Board board;
 
-	public Game() {
+	int numberOfPlayers;
+
+	private Player[] players;
+
+	public Game(int numberOfPlayers) {
+		this.numberOfPlayers = numberOfPlayers;
+		players = new Player[numberOfPlayers];
+		for (int i = 0; i < numberOfPlayers; i++) {
+			players[i] = new Player();
+		}
 		loadBoardFromDisk("default");
+		board.setPlayers(players);
+
 	}
 	
 	public Board getBoard() {
@@ -21,17 +36,23 @@ public class Game {
 		this.board = board;
 	}
 
+	private BufferedReader ReadBoardFile(String boardName) throws FileNotFoundException {
+		return new BufferedReader(new FileReader("boards/"+boardName+".txt"));
+	}
+	private int getLineLength(String line) {
+		return line.split("").length;
+	}
+
 	public void loadBoardFromDisk(String boardName) {
 		Board b = new Board();
 		
 		BufferedReader reader;
 		try {
-			//Read board file
-			reader = new BufferedReader(new FileReader("boards/"+boardName+".txt"));
+			reader = ReadBoardFile(boardName);
 			//Read first line
 			String line = reader.readLine();
-			//Store the length of first row, which should also be length of all rows
-			int rowLength = line.split("").length;
+			int rowLength = getLineLength(line);
+
 			//Initialize array of hexes for the previous readLine()
 			//and fill with null
 			ArrayList<Hex> lastLine = new ArrayList<>(rowLength);
@@ -52,8 +73,12 @@ public class Game {
 						//Find number at pos and set either empty
 						//or piece with that player number
 						int num = Integer.parseInt(p);
-						if (num == 0) hex.setPiece(null);
-						else hex.setPiece(new Piece(num));
+						if (num == 0 || num > numberOfPlayers) hex.setPiece(null);
+						else {
+							Piece piece = new Piece(num, hex);
+							hex.setPiece(piece);
+							players[num - 1].addPiece(piece);
+						}
 						if (lastLine.get(x) != null) {
 							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x));
 						}
@@ -69,7 +94,7 @@ public class Game {
 						lastHex = hex;
 
 						b.addHex(hex);
-					}else {
+					} else {
 						currentLine.add(null);
 						lastHex = null;
 					}
@@ -82,5 +107,10 @@ public class Game {
 			e.printStackTrace();
 		}
 		this.board = b;
+
+		// DEBUGGING
+		for (Player player : players) {
+			System.out.print(player.getPieces().size() + ", ");
+		}	System.out.println();
 	}
 }

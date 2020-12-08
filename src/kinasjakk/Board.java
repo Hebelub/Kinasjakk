@@ -4,9 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
-	
+
 	List<Hex> hexes;
-	
+
+	Player[] players;
+	int playerTurn = 0;
+
+	public Player getPlayerNumber(int turn) {
+		return players[turn % players.length];
+	}
+	public Player getPlayerToMove() {
+		return getPlayerNumber(playerTurn);
+	}
+	public Player setNextTurn() {
+		playerTurn++;
+		return getPlayerToMove();
+	}
+
 	public Board() {
 		hexes = new ArrayList<>();
 	}
@@ -26,6 +40,11 @@ public class Board {
 	public void makeMove(Hex from, Hex to) {
 		Piece pieceToMove = from.getPiece();
 		from.setPiece(to.getPiece());
-		to.setPiece(pieceToMove);	
+		to.setPiece(pieceToMove);
+		setNextTurn();
+	}
+
+	public void setPlayers(Player[] players) {
+		this.players = players;
 	}
 }

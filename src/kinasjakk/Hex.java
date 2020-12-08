@@ -82,6 +82,9 @@ public class Hex implements Comparable<Hex> {
 
 	public void setPiece(Piece piece) {
 		this.piece = piece;
+		if(piece != null) {
+			piece.setHex(this);
+		}
 	}
 
 

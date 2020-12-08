@@ -24,11 +24,15 @@ public class MainFrame {
         frame.add(sideBar);
         frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        startNewGame();
+
+		startNewGame();
+
+		sideBar.updateMoveFromComboBox();
+
 	}
 	
 	public void startNewGame() {
-		currentGame = new Game();
+		currentGame = new Game(6);
 		boardPane.setBoard(currentGame.getBoard());
 		sideBar.setGame(currentGame);
 	}

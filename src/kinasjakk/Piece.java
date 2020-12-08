@@ -4,8 +4,19 @@ public class Piece {
 
     public int player;
 
-	public Piece(int player) {
+    private Hex hex;
+
+	public Hex getHex() {
+		return hex;
+	}
+
+	public void setHex(Hex hex) {
+		this.hex = hex;
+	}
+
+	public Piece(int player, Hex atHex) {
     	this.player = player;
+    	hex = atHex;
     }
 	
     public int getPlayer() {

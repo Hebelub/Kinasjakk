@@ -37,4 +37,27 @@ public class Player {
     public void setHuman(boolean human) {
         isHuman = human;
     }
+
+    public void addPiece(Piece piece) {
+        pieces.add(piece);
+    }
+    public void addWinHex(Hex winHex) {
+        winHexes.add(winHex);
+    }
+
+    public void addStartHex(Hex startHex) {
+        startHexes.add(startHex);
+    }
+
+    public List<Hex> getStartHexes() {
+        return startHexes;
+    }
+
+    public List<Hex> getWinHexes() {
+        return winHexes;
+    }
+
+    public List<Piece> getPieces() {
+        return pieces;
+    }
 }
