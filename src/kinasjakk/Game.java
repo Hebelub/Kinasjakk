@@ -107,10 +107,5 @@ public class Game {
 			e.printStackTrace();
 		}
 		this.board = b;
-
-		// DEBUGGING
-		for (Player player : players) {
-			System.out.print(player.getPieces().size() + ", ");
-		}	System.out.println();
 	}
 }
