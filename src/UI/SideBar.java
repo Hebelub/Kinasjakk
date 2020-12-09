@@ -4,21 +4,27 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-import kinasjakk.*;
+import kinasjakk.Board;
+import kinasjakk.Game;
+import kinasjakk.Hex;
+import kinasjakk.HexJump;
 
 public class SideBar extends JPanel {
 
 	BoardPane boardPane;
-
-	JButton bestMoveButton;
-	JButton moveButton;
-	JComboBox<Integer> inputMoveFrom = new JComboBox<>();
+	JButton button;
+	JTextField inputMoveFrom = new JTextField("0", 5);
 	JComboBox<Integer> inputMoveTo = new JComboBox<>();
 	Game game;
 	
@@ -38,97 +44,63 @@ public class SideBar extends JPanel {
 		executeMove.add(inputMoveFrom);
 		executeMove.add(new Label("Move to: "));
 		executeMove.add(inputMoveTo);
-		moveButton = new JButton("Make move");
-		executeMove.add(moveButton);
-		bestMoveButton = new JButton("Do Best Move");
-		executeMove.add(bestMoveButton);
+		button = new JButton("Make move");
+		executeMove.add(button);
 
 		this.add(history);
 		this.add(new JSeparator());
 		this.add(executeMove);
 		this.add(new JSeparator());
 
-		moveButton.addActionListener(new ActionListener() {
+		// Listen for changes in the text
+		inputMoveFrom.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) { warn(); }
+			public void removeUpdate(DocumentEvent e) { warn();	}
+			public void insertUpdate(DocumentEvent e) { warn();	}
+
+			public void warn() {
+				try {
+					Hex fromHex = game.getBoard().getHexes().get(Integer.parseInt(inputMoveFrom.getText()));
+					List<Hex> possibleHexes = game.getBoard().getPossibleHexesFrom(fromHex);
+					Collections.sort(possibleHexes);
+
+					// getting existing combo box model
+					DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
+					// removing old data
+					model.removeAllElements();
+
+					for(Hex hex : possibleHexes) {
+						model.addElement(hex.id);
+					}
+
+					inputMoveTo.setModel(model);
+
+				} catch (Exception e) { }
+
+			}
+		});
+
+		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				Board b = game.getBoard();
 
-				preformSelectedMove();
+				int from = Integer.parseInt(inputMoveFrom.getText());
+				int to = (int)inputMoveTo.getSelectedItem();
+				inputMoveFrom.setText("");
+
+				// getting existing combo box model
+				DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
+				// removing old data
+				model.removeAllElements();
+
+				b.makeMove(b.getHexes().get(from), b.getHexes().get(to));
+
+				boardPane.repaint();
 			}
 		});
-
-		bestMoveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				PreformRandomMove();
-			}
-		});
-
-		inputMoveFrom.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				updateMoveToComboBox();
-
-			}
-		});
-
-		// updateMoveFromComboBox();
 	}
-
-	private void PreformRandomMove() {
-		Random r = new Random();
-		inputMoveFrom.setSelectedItem(inputMoveFrom.getItemAt(r.nextInt(inputMoveFrom.getItemCount())));
-		inputMoveTo.setSelectedItem(inputMoveTo.getItemAt(r.nextInt(inputMoveTo.getItemCount())));
-		preformSelectedMove();
-	}
-	public void preformSelectedMove() {
-		Board board = game.getBoard();
-
-		int from = (int)inputMoveFrom.getSelectedItem();
-		int to = (int)inputMoveTo.getSelectedItem();
-
-		board.makeMove(board.getHexes().get(from), board.getHexes().get(to));
-
-		boardPane.repaint();
-
-		updateMoveFromComboBox();
-	}
-
-	public void updateMoveFromComboBox() {
-		// getting existing combo box model
-		DefaultComboBoxModel modelFrom = (DefaultComboBoxModel) inputMoveFrom.getModel();
-		// removing old data
-		modelFrom.removeAllElements();
-		// Adding the pieces of the new player
-		List<Piece> pieces = game.getBoard().getPlayerToMove().getPieces();
-		for(Piece piece : pieces) {
-			modelFrom.addElement(piece.getHex().id);
-		}
-
-		updateMoveToComboBox();
-	}
-
-	public void updateMoveToComboBox() {
-
-		if(inputMoveFrom.getSelectedItem() == null) return;
-
-		Hex fromHex = game.getBoard().getHexes().get((int)inputMoveFrom.getSelectedItem());
-		List<Hex> possibleHexes = game.getBoard().getPossibleHexesFrom(fromHex);
-		Collections.sort(possibleHexes);
-
-		// getting existing combo box model
-		DefaultComboBoxModel model = (DefaultComboBoxModel) inputMoveTo.getModel();
-		// removing old data
-		model.removeAllElements();
-
-		for(Hex hex : possibleHexes) {
-			model.addElement(hex.id);
-		}
-
-		inputMoveTo.setModel(model);
-
-	}
-
+	
 	public void setGame(Game game) {
 		this.game = game;
 	}
