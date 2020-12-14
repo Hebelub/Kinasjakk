@@ -11,15 +11,23 @@ public class Player {
     private boolean isHuman;
     private Color color;
 
-    private List<Hex> startHexes = new ArrayList<>();
-    private List<Hex> winHexes = new ArrayList<>();
+//    private List<Hex> startHexes = new ArrayList<>();
+//    private List<Hex> goalHexes = new ArrayList<>();
     private List<Piece> pieces = new ArrayList<>();
 
+    private static int nextId = 0;
+    public int id;
+
     public Player() {
+        assignId();
         name = "New Player";
         isHuman = true;
         Random r = new Random();
         color = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+    }
+
+    private void assignId() {
+        id = nextId++;
     }
 
     public String getName() {
@@ -41,23 +49,35 @@ public class Player {
     public void addPiece(Piece piece) {
         pieces.add(piece);
     }
-    public void addWinHex(Hex winHex) {
-        winHexes.add(winHex);
-    }
+//   public void addWinHex(Hex winHex) {
+//       goalHexes.add(winHex);
+//   }
 
-    public void addStartHex(Hex startHex) {
-        startHexes.add(startHex);
-    }
+//   public void addStartHex(Hex startHex) {
+//       startHexes.add(startHex);
+//   }
 
-    public List<Hex> getStartHexes() {
-        return startHexes;
-    }
-
-    public List<Hex> getWinHexes() {
-        return winHexes;
-    }
+//    public List<Hex> getStartHexes() {
+//        return startHexes;
+//    }
+//
+//    public List<Hex> getGoalHexes() {
+//        return goalHexes;
+//    }
 
     public List<Piece> getPieces() {
         return pieces;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Player oppositePlayer;
+    public Player getOppositePlayer() {
+        return oppositePlayer;
+    }
+    public void setOppositePlayer(Player oppositePlayer) {
+        this.oppositePlayer = oppositePlayer;
     }
 }

@@ -2,7 +2,7 @@ package kinasjakk;
 
 public class Piece {
 
-    public int player;
+    public Player player;
 
     private Hex hex;
 
@@ -14,16 +14,16 @@ public class Piece {
 		this.hex = hex;
 	}
 
-	public Piece(int player, Hex atHex) {
+	public Piece(Player player, Hex atHex) {
     	this.player = player;
     	hex = atHex;
     }
 	
-    public int getPlayer() {
+    public Player getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(int player) {
+	public void setPlayer(Player player) {
 		this.player = player;
 	}    
 }

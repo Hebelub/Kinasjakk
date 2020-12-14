@@ -48,29 +48,19 @@ public class SideBar extends JPanel {
 		this.add(executeMove);
 		this.add(new JSeparator());
 
-		moveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
+		moveButton.addActionListener(arg0 -> preformSelectedMove());
 
-				preformSelectedMove();
+		bestMoveButton.addActionListener(arg0 -> {
+			try {
+				game.ai.getCrossingMove(game.getBoard()).move();
 			}
+			catch (Exception e) {
+				game.getBoard().setNextTurn();
+			}
+			boardPane.repaint();
 		});
 
-		bestMoveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				PreformRandomMove();
-			}
-		});
-
-		inputMoveFrom.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				updateMoveToComboBox();
-
-			}
-		});
+		inputMoveFrom.addActionListener(e -> updateMoveToComboBox());
 
 		// updateMoveFromComboBox();
 	}
@@ -81,6 +71,7 @@ public class SideBar extends JPanel {
 		inputMoveTo.setSelectedItem(inputMoveTo.getItemAt(r.nextInt(inputMoveTo.getItemCount())));
 		preformSelectedMove();
 	}
+
 	public void preformSelectedMove() {
 		Board board = game.getBoard();
 

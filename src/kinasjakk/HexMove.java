@@ -4,18 +4,31 @@ import java.util.List;
 
 public class HexMove {
 
-    private List<Hex> shortestPath;
+    private Hex from;
+    private Hex to;
 
-    public List<Hex> getShortestPath() {
-        return shortestPath;
+    public Hex getFrom() {
+        return from;
+    }
+    public Hex getTo() {
+        return to;
     }
 
-    public void setShortestPath(List<Hex> shortestPath) {
-        this.shortestPath = shortestPath;
+    HexMove(Hex from, Hex to) {
+        this.from = from;
+        this.to = to;
     }
 
-    HexMove() {
-
+    public boolean isCrossing() {
+        return to.isAtGoal(getFrom().getPiece().getPlayer(), getTo())
+                && !from.isAtGoal(getFrom().getPiece().getPlayer(), getFrom());
+    }
+    public boolean movesFromGoal() {
+        return from.isAtGoal(getFrom().getPiece().getPlayer(), getFrom())
+                && !to.isAtGoal(getFrom().getPiece().getPlayer(), getTo());
     }
 
+    public void move() {
+        from.board.makeMove(this);
+    }
 }

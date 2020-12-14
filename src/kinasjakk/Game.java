@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Game {
 	Board board;
@@ -17,11 +18,21 @@ public class Game {
 
 	private Player[] players;
 
+	public AI ai;
+
 	public Game(int numberOfPlayers) {
+		ai = new AI();
+
 		this.numberOfPlayers = numberOfPlayers;
 		players = new Player[numberOfPlayers];
 		for (int i = 0; i < numberOfPlayers; i++) {
 			players[i] = new Player();
+
+			// Setting opposite players
+			if(i >= 3) {
+				players[i].setOppositePlayer(players[i - 3]);
+				players[i-3].setOppositePlayer(players[i]);
+			}
 		}
 		loadBoardFromDisk("default");
 		board.setPlayers(players);
@@ -42,6 +53,8 @@ public class Game {
 	private int getLineLength(String line) {
 		return line.split("").length;
 	}
+
+	HashMap<Integer, Hex> hexes;
 
 	public void loadBoardFromDisk(String boardName) {
 		Board b = new Board();
@@ -67,7 +80,7 @@ public class Game {
 					//If part of board
 					if (!p.equals(".")) {
 						//Make new hex and set position in grid
-						Hex hex = new Hex();
+						Hex hex = new Hex(b);
 						hex.setX(x);
 						hex.setY(y);
 						//Find number at pos and set either empty
@@ -75,9 +88,12 @@ public class Game {
 						int num = Integer.parseInt(p);
 						if (num == 0 || num > numberOfPlayers) hex.setPiece(null);
 						else {
-							Piece piece = new Piece(num, hex);
+							Piece piece = new Piece(players[num - 1], hex);
 							hex.setPiece(piece);
+
 							players[num - 1].addPiece(piece);
+							// players[num - 1].addStartHex(piece.getHex());
+
 						}
 						if (lastLine.get(x) != null) {
 							hex.setNeighbour(Direction.TOP_RIGHT, lastLine.get(x));

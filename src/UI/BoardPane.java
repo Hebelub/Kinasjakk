@@ -64,14 +64,14 @@ public class BoardPane extends JPanel {
 				int drawX = x * d - offset * y + 480;
 				int drawY = y * 112 + 100;
         		if (!hex.isEmpty()) {
-        			int playerId = hex.getPiece().getPlayer();
+        			int playerId = hex.getPiece().getPlayer().getId();
             		Color c = Color.GREEN;
-            		if (playerId == 1) c = Color.GREEN;
-            		else if (playerId == 2) c = Color.BLACK;
-            		else if (playerId == 3) c = Color.WHITE;
-            		else if (playerId == 4) c = Color.BLUE;
-            		else if (playerId == 5) c = Color.RED;
-            		else if (playerId == 6) c = Color.YELLOW;
+            		if (playerId == 0) c = Color.GREEN;
+            		else if (playerId == 1) c = Color.BLACK;
+            		else if (playerId == 2) c = Color.WHITE;
+            		else if (playerId == 3) c = Color.BLUE;
+            		else if (playerId == 4) c = Color.RED;
+            		else if (playerId == 5) c = Color.YELLOW;
             		drawCenteredCircle(
             				g, 
             				drawX,

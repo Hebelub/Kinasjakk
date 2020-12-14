@@ -20,10 +20,21 @@ public class Hex implements Comparable<Hex> {
 
 	public Hex[] neighbours;
 
-	public Hex() {
+	Board board;
+
+	public Hex(Board atBoard) {
+		board = atBoard;
 		id = nextId++;
 		neighbours = new Hex[6];
 	}
+
+//	private Hex oppositeHex;
+//	public Hex getOppositeHex() {
+//		return oppositeHex;
+//	}
+//	public void setOppositeHex(Hex oppositeHex) {
+//		this.oppositeHex = oppositeHex;
+//	}
 
 	public int getX() {
 		return x;
@@ -87,7 +98,10 @@ public class Hex implements Comparable<Hex> {
 		}
 	}
 
-
+	public boolean isAtGoal(Player from, Hex check) {
+		Player oppositePlayer = from.getOppositePlayer();
+		return board.getStartHexesOfPlayer(oppositePlayer).contains(check);
+	}
 
 	public class Moves {
 
