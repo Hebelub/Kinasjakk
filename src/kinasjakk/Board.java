@@ -18,10 +18,12 @@ public class Board implements Cloneable {
 
 	List<Hex> hexes;
 	private HashMap<Player, ArrayList<Hex>> playerStartHexes;
-	// private HashMap<Player, ArrayList<Hex>> playerGoalHexes; // TODO: Maybe fill this with goalHexes for each player
 
-	public ArrayList<Hex> getStartHexesOfPlayer(Player player) {
-		return playerStartHexes.get(player);
+	public List<Hex> getStartHexesOfPlayer(Player player) {
+		List<Hex> startHexes = playerStartHexes.get(player);
+		if(startHexes == null)
+			return new ArrayList<>();
+		return startHexes;
 	}
 //	public ArrayList<Hex> getGoalHexesOfPlayer(Player player) {
 //		return playerGoalHexes.get(player);
@@ -36,13 +38,33 @@ public class Board implements Cloneable {
 	public Player getPlayerToMove() {
 		return getPlayerNumber(playerTurn);
 	}
+
 	public Player setNextTurn() {
-		// TODO: Check if next player has finished, if so setNextTurn()
-		playerTurn++;
+		if(!allPlayersHasFinished()) {
+			playerTurn++;
+
+			if(getPlayerToMove().hasFinished()) {
+				setNextTurn();
+			}
+
+			if(!getPlayerToMove().isHuman()) {
+				game.ai.getCrossingMove(this).move();
+			}
+		}
+
 		return getPlayerToMove();
 	}
 
-	public Board() {
+	public boolean allPlayersHasFinished() {
+		for(Player player : players)
+			if(!player.hasFinished())
+				return false;
+		return true;
+	}
+
+	public Game game;
+	public Board(Game game) {
+		this.game = game;
 		playerStartHexes = new HashMap<>();
 		// playerGoalHexes = new HashMap<>();
 		hexes = new ArrayList<>();

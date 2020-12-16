@@ -53,6 +53,7 @@ public class SideBar extends JPanel {
 		bestMoveButton.addActionListener(arg0 -> {
 			try {
 				game.ai.getCrossingMove(game.getBoard()).move();
+				updateMoveFromComboBox();
 			}
 			catch (Exception e) {
 				game.getBoard().setNextTurn();

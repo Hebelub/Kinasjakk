@@ -11,7 +11,7 @@ public class AI {
 	}
 	
 	public void run() {
-		Board initialBoard = new Board();
+	//	Board initialBoard = new Board();
 	}
 
 	public int aiStrength = 6;
@@ -70,11 +70,13 @@ public class AI {
 
 	private float getPlayerValue(Board board, Player player) {
 
+		// TODO: Take the difference of player and the best other player
+
 		float value = 0;
 
-		value += getNumberOfHexesInGoal();
+		value += player.getGoalHexes().size();
 
-		value += calculateScoreOfEmptyGoalHexes(getNumberOgEmptyGoalHexes(player));
+		value += calculateScoreOfEmptyGoalHexes(player.getNumberOfEmptyGoalHexes());
 
 
 		return value;
@@ -82,11 +84,5 @@ public class AI {
 
 	private float calculateScoreOfEmptyGoalHexes(int quantity) {
 		return 1 - 1/(quantity + 1);
-	}
-	private int getNumberOgEmptyGoalHexes(Player player) {
-		return 0;
-	}
-	private int getNumberOfHexesInGoal() {
-		return 0;
 	}
 }

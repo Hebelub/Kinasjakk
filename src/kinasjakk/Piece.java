@@ -2,6 +2,8 @@ package kinasjakk;
 
 public class Piece {
 
+	Board board;
+
     public Player player;
 
     private Hex hex;
@@ -15,6 +17,7 @@ public class Piece {
 	}
 
 	public Piece(Player player, Hex atHex) {
+		board = atHex.board;
     	this.player = player;
     	hex = atHex;
     }
@@ -25,5 +28,18 @@ public class Piece {
 
 	public void setPlayer(Player player) {
 		this.player = player;
-	}    
+	}
+
+
+	public boolean isAtGoal() {
+		return getPlayer().getGoalHexes().contains(this);
+	}
+	public boolean isAtStart() {
+		return getPlayer().getStartHexes().contains(this);
+	}
+	public boolean isInMiddle() {
+		return !(isAtGoal() || isAtStart());
+	}
+	// TODO: Add boolean isAtIllegalPosition()
+
 }

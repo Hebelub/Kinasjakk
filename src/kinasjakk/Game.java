@@ -57,7 +57,7 @@ public class Game {
 	HashMap<Integer, Hex> hexes;
 
 	public void loadBoardFromDisk(String boardName) {
-		Board b = new Board();
+		Board b = new Board(this);
 		
 		BufferedReader reader;
 		try {

@@ -28,14 +28,6 @@ public class Hex implements Comparable<Hex> {
 		neighbours = new Hex[6];
 	}
 
-//	private Hex oppositeHex;
-//	public Hex getOppositeHex() {
-//		return oppositeHex;
-//	}
-//	public void setOppositeHex(Hex oppositeHex) {
-//		this.oppositeHex = oppositeHex;
-//	}
-
 	public int getX() {
 		return x;
 	}
