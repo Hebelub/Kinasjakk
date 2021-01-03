@@ -3,25 +3,26 @@ package kinasjakk;
 import java.util.*;
 import java.util.List;
 
+import javafx.scene.shape.Line;
+
 public class Hex implements Comparable<Hex> {
 
 	@Override
 	public int compareTo(Hex compareId) {
-
 		return this.id - compareId.id;
 	}
-
-	private static int nextId = 0;
+	
 	public int id;
 	private Piece piece;
+	private Player hexOwner;
 	
 	private int x;
 	private int y;
 
 	public Hex[] neighbours;
 
-	public Hex() {
-		id = nextId++;
+	public Hex(int id) {
+		this.id = id;
 		neighbours = new Hex[6];
 	}
 
@@ -58,7 +59,6 @@ public class Hex implements Comparable<Hex> {
 			ids[i] = String.valueOf(Direction.values()[i]) + "=" + id;
 		}
 		return "" + id + " " + hasPiece();
-		// return "Hex: " + id + ", [neighbours=" + Arrays.toString(ids) + "]";
 	}
 
 	public List<Hex> getPossibleHexes() {
@@ -195,7 +195,166 @@ public class Hex implements Comparable<Hex> {
 		return piece;
 	}
 
+	public boolean ownedByOpponent(Player player) {
+		if (hexOwner == null) return false;
+		else if (hexOwner.getID() == player.getOpponent().getID()) return true;
+		else return false;
+	}
+	
+	public boolean ownedByPlayer(Player player) {
+		if (hexOwner == null) return false;
+		else if (hexOwner.getID() == player.getID()) return true;
+		else return false;
+	}
+	
 	public void setPiece(Piece piece) {
 		this.piece = piece;
+		if (piece != null) piece.setHex(this);
+	}
+	
+	public void setOwner(Player player) {
+		hexOwner = player;
+		if (!player.getStartHexes().contains(this))
+			player.addStartHex(this);
+	}
+	
+	public Player getOwner() {
+		return hexOwner;
+	}
+	
+	public Player getPlayer() {
+		return piece.getPlayer();
+	}
+	
+	public List<HexMove> addOneDistanceHexes(List<HexMove> hexMoves) {
+		//Get one-distance hexes
+		List<Hex> oneDistanceHexes = getOneDistanceHexes(new ArrayList<Hex>());
+		// Delete HexMove if its end hex is one of the one-distance hexes,
+		// as one-distance move is less jumps
+		ListIterator<HexMove> iter = hexMoves.listIterator();
+		while(iter.hasNext()) {
+			HexMove move = iter.next();
+			Hex endHex = move.getEndHex();
+			if (oneDistanceHexes.contains(endHex)) {
+				oneDistanceHexes.remove(endHex); // Remove oneHex
+				iter.remove(); // Remove current move
+				// Add new move with a single jump, from myself to one-distance hex
+				HexJump hexJump = new HexJump(this, endHex);
+				HexPath path = new HexPath(hexJump, piece);
+				iter.add(path.makeMove());
+			}
+		}
+		
+		//Add remaining one-distance moves
+		for (Hex hex : oneDistanceHexes) {
+			HexJump hexJump = new HexJump(this, hex);
+			HexPath path = new HexPath(hexJump, piece);
+			hexMoves.add(path.makeMove());
+		}
+		
+		return hexMoves;
+	}
+	
+	public List<HexMove> removeMovesEndingInEnemyTerritory(Player goodGuy, List<HexMove> hexMoves) {
+		ListIterator<HexMove> iter = hexMoves.listIterator();
+		while(iter.hasNext()) {
+			HexMove move = iter.next();
+			Hex endHex = move.getEndHex();
+			// Check if goodGuy is in hex belonging to enemy
+			Player hexOwner = endHex.getOwner();
+			if (hexOwner != null && // hex has owner check
+				goodGuy.getID() != hexOwner.getID() && // owner is not myself
+				hexOwner.getID() != goodGuy.getOpponent().getID() // owner is not my opponent
+			) {
+				iter.remove();
+			}	
+		}
+		return hexMoves;
+	}
+	
+	// Removes moves that does not open up my territory, if it is full!
+	// and I have pieces left at home
+	private List<HexMove> removeMovesIfTerritoryFull(Player player, List<HexMove> hexMoves) {
+		if (player.hasPieceAtStart() && player.allStartingHexesHavePiece()) {
+			List<Hex> playerHexes = player.getStartHexes(); 
+			ListIterator<HexMove> iter = hexMoves.listIterator();
+			while(iter.hasNext()) {
+				HexMove move = iter.next();
+				Hex start = move.getStartHex();
+				// Remove move (invalid) if it does not clear up my start area
+				if (!start.ownedByPlayer(player)) {
+					iter.remove();
+				}
+				
+			}
+		}
+		return hexMoves;
+	}
+
+	public List<HexMove> getPossibleMoves() {
+		// Make new empty list to populate and return at end of method
+		List<HexMove> hexMoves = new ArrayList<HexMove>();
+
+		// Temporarily remove piece (mimicking that piece "moves" when jumping)
+		Piece piece = getPiece();
+		setPiece(null);
+		
+		// Find hex jumps and store in paths, that become hex moves
+		List<HexPath> hexPaths = new ArrayList<HexPath>();
+		
+		// Store a list of previously visited hexes, to avoid going in circles
+		List<Hex> testedHexes = new ArrayList<Hex>();
+		testedHexes.add(this);
+		
+		// Get initial valid hexes in straight line (a jump)
+		List<Hex> initialHexes = getAvailableHexesInAllDirectionsFrom(this, testedHexes);
+		for(Hex hex : initialHexes) {
+			//Make new jump from myself to hex
+			HexJump hexJump = new HexJump(this, hex);
+			//This jump is the start of a long path of HexJumps
+			HexPath path = new HexPath(hexJump, piece);
+			hexPaths.add(path);
+			//It's a valid move to stop here
+			hexMoves.add(path.makeMove());
+			//We don't need to revisit these hexes, as they are now part of a move already
+			testedHexes.add(hex);
+		}
+		
+		// Expand initial paths with more jumps
+		while(hexPaths.size() > 0) {
+			HexPath path = hexPaths.get(0);
+			//Continue from endpoint of last jump in the path
+			Hex end = path.getEndHex();
+			List<Hex> hexesInLine = getAvailableHexesInAllDirectionsFrom(end, testedHexes);
+			if (hexesInLine.size() > 0) {
+				// If endpoint can reach hexes, new jumps are added to path
+				for(Hex hex : hexesInLine) {
+					HexJump hexJump = new HexJump(end, hex);
+					HexPath continuePath = path.copy();
+					continuePath.addJump(hexJump);
+					hexPaths.add(continuePath);
+					hexPaths.remove(path);
+					//It's a valid move to stop here
+					hexMoves.add(continuePath.makeMove());
+					//We don't need to revisit these hexes.
+					testedHexes.add(hex);
+				}
+			}else {
+				//If no more jumps available, path is complete.
+				hexPaths.remove(path);
+			}
+		}
+		
+		hexMoves = addOneDistanceHexes(hexMoves);
+		hexMoves = removeMovesEndingInEnemyTerritory(piece.getPlayer(), hexMoves);
+		hexMoves = removeMovesIfTerritoryFull(piece.getPlayer(), hexMoves);
+		
+		// Remove moves ending in my territory if piece outside already
+		// Also make AI do completely random move if goalHexes are all filled up (i.e. no empty ones)
+		// Should it be a rule that you must always have an open space in your territory?
+		
+		setPiece(piece); // Put piece back
+		
+		return hexMoves;
 	}
 }

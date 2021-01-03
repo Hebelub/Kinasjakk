@@ -1,2 +1,5 @@
+[GAME]
+Players=1
+[BOARD]
 1.
 11

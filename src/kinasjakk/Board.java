@@ -5,14 +5,10 @@ import java.util.List;
 
 public class Board {
 	
-	List<Hex> hexes;
+	private List<Hex> hexes;
 	
-	public Board() {
-		hexes = new ArrayList<Hex>();
-	}
-	
-	public void addHex(Hex hex) {
-		hexes.add(hex);
+	public Board(List<Hex> hexes) {
+		this.hexes = hexes;
 	}
 
 	public List<Hex> getHexes() {
@@ -20,15 +16,41 @@ public class Board {
 	}
 
 	public List<Hex> getPossibleHexesFrom(Hex startHex) {
-
-		List<Hex> possibleMoves = startHex.getPossibleHexes();
-
-		return possibleMoves;
+		return startHex.getPossibleHexes();
 	}
+	
+	public List<HexMove> getPossibleMovesFrom(Hex startHex) {
+		return startHex.getPossibleMoves();
+	}
+	
+ 	public List<HexMove> getPossibleMovesFrom(Player player) {
+ 		List<HexMove> moves = new ArrayList<HexMove>();
+ 		for(Hex hex : player.getPieceHexes()) {
+ 			moves.addAll(getPossibleMovesFrom(hex));
+ 		}
+ 		return moves;
+ 	}
 
-	public void makeMove(Hex from, Hex to) {
-		Piece pieceToMove = from.getPiece();
-		from.setPiece(to.getPiece());
-		to.setPiece(pieceToMove);	
+	/**
+	 * Make move by giving start and end hex
+	 * @param start Hex containing piece to move
+	 * @param end Hex where piece will end up
+	 */
+	public void makeMove(Hex start, Hex end) {
+		Piece pieceToMove = start.getPiece();
+		start.setPiece(end.getPiece());
+		end.setPiece(pieceToMove);	
+	}
+	
+	/**
+	 * Make move by giving a HexMove object with valid HexJumps
+	 * @param move
+	 */
+	public void makeMove(HexMove move) {
+		makeMove(move.getStartHex(), move.getEndHex());
+	}
+	
+	public void undoMove(HexMove move) {
+		makeMove(move.getEndHex(), move.getStartHex());
 	}
 }
