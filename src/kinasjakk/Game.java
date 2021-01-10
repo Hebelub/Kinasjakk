@@ -275,13 +275,21 @@ public class Game {
 					int numPlayers = Integer.parseInt(value);
 					players = new ArrayList<>();
 					//TODO extract player colors into savefile
-					Color[] playerColors = { 
+					/*Color[] playerColors = { 
 							Color.GREEN,
-							Color.BLACK,
-							Color.WHITE,
 							Color.BLUE,
+							Color.WHITE,
+							Color.BLACK,
 							Color.RED,
 							Color.YELLOW,
+					};*/
+					Color[] playerColors = {
+							Color.YELLOW, // 1
+							Color.RED, // 2
+							Color.BLUE, // 3
+							Color.GREEN, // 4
+							Color.WHITE, // 5
+							Color.BLACK, // 6
 					};
 					for (int i = 0; i < numPlayers; i++) {
 						Player player = new Player(i+1);
