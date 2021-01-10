@@ -7,6 +7,7 @@ import java.util.Random;
 import kinasjakk.Board;
 import kinasjakk.Hex;
 import kinasjakk.HexMove;
+import kinasjakk.Piece;
 import kinasjakk.Player;
 
 public abstract class AI {
@@ -79,7 +80,13 @@ public abstract class AI {
 		 * between this and all possibleMoves to find closest move
 		 * If no empty goal hex exists, this returns null
 		 */
-		Hex goal = player.getOpponent().getStartHexes().get(0);		
+    	List<Hex> empty = findEmptyGoalHexes();
+    	Hex goal = player.getOpponent().getStartHexes().get(0);
+    	if (empty.size() > 0) {
+    		Random random = new Random();
+    		goal = empty.get(random.nextInt(empty.size()));
+    	}
+ 		//Hex goal = player.getOpponent().getStartHexes().get(0);
 		HexMove closestMove = possibleMoves.get(0);
 		double currentDistance = Integer.MAX_VALUE;
 		for(int i = 1; i < possibleMoves.size(); i++) {
@@ -88,9 +95,7 @@ public abstract class AI {
 			if (move.getStartHex().ownedByOpponent(player)) continue;
 			Hex end = move.getEndHex();
 			//Calculate difference
-			int diffX = end.getX() - goal.getX();
-			int diffY = end.getY() - goal.getY();
-			double distance = Math.sqrt(diffX*diffX + diffY*diffY);
+			double distance = distanceBetweenHexes(end, goal);
 			// If closer than current record, set new record
 			if (distance < currentDistance) {
 				currentDistance = distance;
@@ -99,6 +104,30 @@ public abstract class AI {
 		}
 		return closestMove;
 	}
+    
+    protected Hex findFurthestGoalHex(Hex hex) {
+    	List<Hex> allEmpty = findEmptyGoalHexes();
+    	if (allEmpty.size() > 0) {
+    		double distance = Integer.MAX_VALUE;
+    		Hex furthest = allEmpty.get(0);
+    		for(Hex emptyGoalHex : allEmpty) {
+    			double d = distanceBetweenHexes(hex, emptyGoalHex);
+    			if (d < distance) {
+    				distance = d;
+    				furthest = emptyGoalHex;
+    			}
+    		}
+    		return furthest;
+    	}else {
+    		return null;
+    	}
+    }
+    
+    protected Hex findRandomEmptyGoalHex() {
+		List<Hex> allEmpty = findEmptyGoalHexes();
+		Random random = new Random();
+		return allEmpty.get(random.nextInt(allEmpty.size()));
+    }
 	
     protected List<Hex> findEmptyGoalHexes() {
 		List<Hex> goalHexes = player.getOpponent().getStartHexes();
@@ -121,7 +150,36 @@ public abstract class AI {
 		Random rand = new Random();
 		return notFromGoal.get(rand.nextInt(notFromGoal.size()));
 	}
+	
+	/**
+     * Calculates the sum of every piece's distance to the goal
+     * In other words, the distance remaining to win
+     */
+    public double distanceRemaining() {
+    	double sum = 0.0;
+    	for (Piece piece : player.getPieces()) {
+    		// If piece not in goal (as those at goal are 0 distance from goal)
+    		if (!piece.getHex().ownedByOpponent(player)) {
+    			Hex goal = findFurthestGoalHex(piece.getHex());
+    			if (goal == null) {
+    				goal = player.getOpponent().getStartHexes().get(0);
+    			}
+    			sum += distanceBetweenHexes(piece.getHex(), goal);
+    		}
+    	}
+    	return sum;
+    }
     
+    /**
+     * Calculate the direct-line distance between two hexes using Pythagoras' theorem.
+     */
+    
+    protected double distanceBetweenHexes(Hex start, Hex end) {
+    	int diffX = start.getX() - end.getX();
+		int diffY = start.getY() - end.getY();
+		return Math.sqrt(diffX*diffX + diffY*diffY);
+    }
+	
     protected void printAction(String actionText) {
 		System.out.println("(Player" + player.getID() + ") " + player.getName() + " " + actionText);
     }

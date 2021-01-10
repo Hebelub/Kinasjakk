@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import AI.GreedyAI;
+import AI.HerdAI;
+import AI.RandomAI;
 import kinasjakk.HexMove;
 import kinasjakk.Player;
 
@@ -104,6 +106,8 @@ public class PeopleWindow {
 		JComboBox<String> playerType = new JComboBox<>();
 		playerType.addItem("Human");
 		playerType.addItem("GreedyAI");
+		playerType.addItem("HerdAI");
+		playerType.addItem("RandomAI");
 		if (player.isHumanPlayer()) playerType.setSelectedIndex(0);
 		else if (player.getAI() instanceof GreedyAI) playerType.setSelectedIndex(1);
 		JLabel playerTypeLabel = new JLabel("Brain: ");
@@ -127,6 +131,10 @@ public class PeopleWindow {
 					p.setHumanPlayer();
 				}else if (type.equals("GreedyAI")) {
 					p.setAIPlayer(new GreedyAI(p));
+				}else if (type.equals("HerdAI")) {
+					p.setAIPlayer(new HerdAI(p));
+				}else if (type.equals("RandomAI")) {
+					p.setAIPlayer(new RandomAI(p));
 				}
 				p.setName(playerName.getText().trim());
 				updatePlayerList();

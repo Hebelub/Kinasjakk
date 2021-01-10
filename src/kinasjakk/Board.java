@@ -3,7 +3,7 @@ package kinasjakk;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board {
+public class Board  {
 	
 	private List<Hex> hexes;
 	

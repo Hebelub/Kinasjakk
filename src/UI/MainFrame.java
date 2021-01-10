@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import AI.AI;
 import AI.GreedyAI;
+import AI.HerdAI;
 import AI.RandomAI;
 import kinasjakk.Game;
 import kinasjakk.Player;
@@ -74,7 +75,7 @@ public class MainFrame {
 	private JMenu createAIMenu() {
 		JMenu aiMenu = new JMenu("AI");
 		JMenu aiSubMenu = new JMenu("Set primary AI");
-		String[] ais = {"GreedyAI", "RandomAI"};
+		String[] ais = {"GreedyAI", "HerdAI", "RandomAI"};
 		ButtonGroup group = new ButtonGroup();
 		for (int i = 0; i < ais.length; i++) {
 			String name = ais[i];
@@ -85,6 +86,8 @@ public class MainFrame {
 				public void actionPerformed(ActionEvent event) {
 					if (event.getActionCommand().equals("GreedyAI")) {
 						currentGame.setPreferredAI(new GreedyAI(null));
+					}else if (event.getActionCommand().equals("HerdAI")) {
+						currentGame.setPreferredAI(new HerdAI(null));
 					}else if (event.getActionCommand().equals("RandomAI")) {
 						currentGame.setPreferredAI(new RandomAI(null));
 					}
@@ -103,6 +106,17 @@ public class MainFrame {
             	List<Player> players = currentGame.getPlayers();
             	for(int i = 0; i < players.size(); i++) {
             		players.get(i).setAIPlayer(new GreedyAI(players.get(i)));
+            	}
+            }
+        });
+		JMenuItem allHerdAI = new JMenuItem("Make all players HerdAI");
+		aiMenu.add(allHerdAI);
+		allHerdAI.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+            	//Make all player into HerdAIs
+            	List<Player> players = currentGame.getPlayers();
+            	for(int i = 0; i < players.size(); i++) {
+            		players.get(i).setAIPlayer(new HerdAI(players.get(i)));
             	}
             }
         });
