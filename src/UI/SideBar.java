@@ -39,6 +39,7 @@ public class SideBar extends JPanel {
 	JCheckBox shouldDrawArrowsCheckBox;
 	JCheckBox shouldDrawPossibleMovesCheckBox;
 	JCheckBox doEntireRoundOnMoveIfAllPlayersAI;
+	JCheckBox drawHexNumbers;
 	Game game;
 	
 	JButton moveForward;
@@ -120,11 +121,26 @@ public class SideBar extends JPanel {
 		shouldDrawPossibleMovesCheckBox.setSelected(true);
 		c.gridx = 0;
 		c.gridy = 6;
-		c.weightx = 1;
-		c.gridwidth = GridBagConstraints.REMAINDER;
 		doEntireRoundOnMoveIfAllPlayersAI = new JCheckBox("If all AI: Make AI move for all (one round)");
 		this.add(doEntireRoundOnMoveIfAllPlayersAI, c);
 		doEntireRoundOnMoveIfAllPlayersAI.setSelected(true);
+		drawHexNumbers = new JCheckBox("Hex Numbers");
+		drawHexNumbers.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == ItemEvent.SELECTED) {
+					boardPane.setDrawHexNumbers(true);
+					boardPane.repaint();
+				}else {
+					boardPane.setDrawHexNumbers(false);
+					boardPane.repaint();
+				}
+			}
+		});
+		drawHexNumbers.setSelected(true);
+		c.gridx = 1;
+		c.gridy = 6;
+		this.add(drawHexNumbers, c);
 		
 		inputMoveFrom.addItemListener(new ItemListener() {
 			@SuppressWarnings("unchecked")
@@ -198,9 +214,11 @@ public class SideBar extends JPanel {
 		gotoStart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Going backwards: ");
 				while(game.getMoveCounter() > 0) {
 					game.goBackward();
 				}
+				System.out.println(game.getWhoseTurn().getID());
 				updateAll();
 			}
 		});
@@ -280,7 +298,11 @@ public class SideBar extends JPanel {
 		List<Hex> hexes = game.getWhoseTurn().getPieceHexes();
 		Collections.sort(hexes);
 		for(Hex hex : hexes) {
-			inputMoveFrom.addItem(new ComboItem<Hex>(Integer.toString(hex.id), hex));
+			List<HexMove> possibleMoves = hex.getPossibleMoves();
+			// Add only to list if it has possible moves
+			if (possibleMoves.size() > 0) {
+				inputMoveFrom.addItem(new ComboItem<Hex>(Integer.toString(hex.id), hex));
+			}
 		}
 	}
 	

@@ -13,6 +13,7 @@ import java.util.ListIterator;
 
 import AI.AI;
 import AI.GreedyAI;
+import AI.RegisteredAI;
 
 public class Game {
 	private List<Player> players;
@@ -23,13 +24,17 @@ public class Game {
 	private AI findBestMoveAI;
 	private boolean gameFinished = false;
 	
+	private List<Integer> turnIndexes;
+	
 	File lastGameLoaded;
 	static final String saveFileExtension = ".txt";
 
 	public Game() {
 		players = new ArrayList<Player>();
 		history = new ArrayList<HexMove>();
-		findBestMoveAI = new GreedyAI(null);
+		findBestMoveAI = RegisteredAI.giveInstance(RegisteredAI.getNames()[0], null);
+		turnIndexes = new ArrayList<>();
+		turnIndexes.add(0);
 		load("default");
 	}
 	
@@ -57,13 +62,7 @@ public class Game {
 	}
 	
 	private void nextPlayer() {
-		int index = players.indexOf(whoseTurn);
-		int newIndex = index+1;
-		if (newIndex >= players.size()) newIndex = 0;
-		whoseTurn = players.get(newIndex);
-		if (whoseTurn.hasFinished() && !allFinished()) {
-			nextPlayer();
-		}
+		whoseTurn = players.get(turnIndexes.get(currentMove+1));
 	}
 	
 	public boolean allFinished() {
@@ -77,9 +76,7 @@ public class Game {
 		if (currentMove > -1) {
 			undoCurrentMove();
 			currentMove--;
-			int index = players.indexOf(whoseTurn);
-			int newIndex = index-1;
-			if (newIndex < 0) newIndex = players.size() - 1;
+			int newIndex = turnIndexes.get(currentMove + 1);
 			whoseTurn = players.get(newIndex);
 		}
 	}
@@ -130,9 +127,24 @@ public class Game {
 			}
 			history = newHistory;
 		}
-		//Add move to history and go forward in history
+		// Add move to history
 		history.add(move);
+		// Add turn index to list
+		addTurnIndex();
+		// Go forward in history
 		goForward();
+	}
+	
+	public void addTurnIndex() {
+		int index = players.indexOf(whoseTurn);
+		int newIndex = index+1;
+		if (newIndex >= players.size()) newIndex = 0;
+		whoseTurn = players.get(newIndex);
+		if (whoseTurn.hasFinished() && !allFinished()) {
+			addTurnIndex();
+		}else {
+			turnIndexes.add(newIndex);
+		}
 	}
 	
 	public void makeMoveIfAI() {

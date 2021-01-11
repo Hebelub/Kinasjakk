@@ -6,6 +6,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,11 +33,13 @@ public class BoardPane extends JPanel {
     Game game;
     
     // draw red arrow showing all jumps in currentMove
-    boolean shouldDrawJumpArrows = false;
+    boolean shouldDrawJumpArrows = true;
     HexMove currentMove;
     // draw white circles for endpoint hexes in possibleMoves
-    boolean shouldDrawPossibleMoves = false;
+    boolean shouldDrawPossibleMoves = true;
     List<HexMove> possibleMoves;
+    //Hex numbers
+    boolean shouldDrawHexNumbers = true;
     
 	public BoardPane() {
 		possibleMoves = new ArrayList<HexMove>();
@@ -49,6 +54,10 @@ public class BoardPane extends JPanel {
 	
 	public void setDrawArrow(boolean bool) {
 		this.shouldDrawJumpArrows = bool;
+	}
+	
+	public void setDrawHexNumbers(boolean bool) {
+		this.shouldDrawHexNumbers = bool;
 	}
 	
 	public void setPossibleMoves(List<HexMove> moves) {
@@ -88,7 +97,7 @@ public class BoardPane extends JPanel {
         drawHexes();
         if (shouldDrawPossibleMoves) drawPossibleMoves();
         if (shouldDrawJumpArrows) drawJumpArrows();
-        drawHexNumbers();
+        if (shouldDrawHexNumbers) drawHexNumbers();
         
 	}
 	
@@ -96,10 +105,7 @@ public class BoardPane extends JPanel {
 		for(HexJump jump : currentMove.getPath()) {
 			Point pStart = getHexCenterPoint(jump.getStartHex());
 			Point pEnd = getHexCenterPoint(jump.getEndHex());
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setColor(Color.RED);
-			g2.setStroke(new BasicStroke(20));
-			g2.drawLine(pStart.x, pStart.y, pEnd.x, pEnd.y);
+			drawArrow(Color.RED, pStart, pEnd, 20);
 		}
 	}
 
@@ -171,6 +177,34 @@ public class BoardPane extends JPanel {
 	
 	public Color getNegativeColor(Color color) {
 		return new Color(255 - color.getRed(),  255 - color.getGreen(),  255 - color.getBlue()); 
+	}
+	
+	private void drawArrow(Color color, Point start, Point end, int size) {  
+		AffineTransform tx = new AffineTransform();
+		Line2D.Double line = new Line2D.Double(start, end);
+		
+		//Calculate arrowhead rotation
+		int arrowheadSize = size + 10;
+		Polygon arrowHead = new Polygon();
+		arrowHead.addPoint( 0,arrowheadSize);
+		arrowHead.addPoint( -arrowheadSize, -arrowheadSize);
+		arrowHead.addPoint( arrowheadSize,-arrowheadSize);
+	    tx.setToIdentity();
+	    double angle = Math.atan2(line.y2-line.y1, line.x2-line.x1);
+	    tx.translate(line.x2, line.y2);
+	    tx.rotate((angle-Math.PI/2d));  
+	
+	    //Draw arrow line
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(Color.RED);
+		g2.setStroke(new BasicStroke(size));
+	    g.drawLine(start.x, start.y, end.x, end.y);
+	    
+	    //Draw arrowhead
+	    Graphics2D tempg2 = (Graphics2D) g.create();
+	    tempg2.setTransform(tx);   
+	    tempg2.fill(arrowHead);
+	    tempg2.dispose();
 	}
 	
 	public void drawCenteredCircle(Graphics g, int x, int y, int r, Color c, boolean fill) {

@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
+import AI.AI;
 import AI.GreedyAI;
 import AI.HerdAI;
 import AI.RandomAI;
-import kinasjakk.HexMove;
+import AI.RegisteredAI;
 import kinasjakk.Player;
 
 public class PeopleWindow {
@@ -62,7 +65,7 @@ public class PeopleWindow {
 					button.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent event) {
-							frame.dispose();
+							frame.setVisible(false);
 						}
 					});
 					frame.add(button, c);
@@ -72,6 +75,12 @@ public class PeopleWindow {
 			}
 		});
 		frame.add(selectPlayer);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				frame.setVisible(false);
+			}
+		});
 	}
 	
 	public JFrame getFrame() {
@@ -104,12 +113,23 @@ public class PeopleWindow {
 		p.add(playerName);
 		 
 		JComboBox<String> playerType = new JComboBox<>();
+		String[] ais = RegisteredAI.getNames();
 		playerType.addItem("Human");
-		playerType.addItem("GreedyAI");
-		playerType.addItem("HerdAI");
-		playerType.addItem("RandomAI");
+		for(String aiName : ais) {
+			playerType.addItem(aiName);
+		}
+		// Set ComboBox index based on selected AI / human
 		if (player.isHumanPlayer()) playerType.setSelectedIndex(0);
-		else if (player.getAI() instanceof GreedyAI) playerType.setSelectedIndex(1);
+		else {
+			String[] names = RegisteredAI.getNames();
+			int index = 0;
+			for(int i = 0; i < names.length; i++) {
+				if (names[i].equals(player.getAI().getName())) {
+					index = i;
+				}
+			}
+			playerType.setSelectedIndex(index+1);
+		}
 		JLabel playerTypeLabel = new JLabel("Brain: ");
 		playerTypeLabel.setLabelFor(playerType);
 		p.add(playerTypeLabel);
@@ -129,12 +149,9 @@ public class PeopleWindow {
 				Player p = playerItem.getValue();
 				if (type.equals("Human")) {
 					p.setHumanPlayer();
-				}else if (type.equals("GreedyAI")) {
-					p.setAIPlayer(new GreedyAI(p));
-				}else if (type.equals("HerdAI")) {
-					p.setAIPlayer(new HerdAI(p));
-				}else if (type.equals("RandomAI")) {
-					p.setAIPlayer(new RandomAI(p));
+				}else {
+					AI ai = RegisteredAI.giveInstance(type, p);
+					p.setAIPlayer(ai);
 				}
 				p.setName(playerName.getText().trim());
 				updatePlayerList();

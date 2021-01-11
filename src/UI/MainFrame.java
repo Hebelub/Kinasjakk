@@ -5,10 +5,9 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -23,9 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
 import AI.AI;
-import AI.GreedyAI;
-import AI.HerdAI;
-import AI.RandomAI;
+import AI.RegisteredAI;
 import kinasjakk.Game;
 import kinasjakk.Player;
 
@@ -54,11 +51,13 @@ public class MainFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		
-		peopleWindow.getFrame().addWindowListener(new WindowAdapter() {
-			@Override
-		    public void windowClosing(WindowEvent windowEvent) {
-		        sideBar.updateAll();
-		    }
+		peopleWindow.getFrame().addComponentListener(new ComponentAdapter() {
+			   public void componentHidden(ComponentEvent e) {
+				   sideBar.updateAll();
+			   }
+			   public void componentShown(ComponentEvent e) {
+			      /* code run when component shown */
+			   }
 		});
 		
 		sideBar.updateAll();
@@ -73,9 +72,10 @@ public class MainFrame {
     }
 	
 	private JMenu createAIMenu() {
+		JMenuItem allAI = new JMenuItem("Make all players primary AI (" + currentGame.getPreferredAI().getName() + ")");
 		JMenu aiMenu = new JMenu("AI");
 		JMenu aiSubMenu = new JMenu("Set primary AI");
-		String[] ais = {"GreedyAI", "HerdAI", "RandomAI"};
+		String[] ais = RegisteredAI.getNames();
 		ButtonGroup group = new ButtonGroup();
 		for (int i = 0; i < ais.length; i++) {
 			String name = ais[i];
@@ -84,13 +84,8 @@ public class MainFrame {
 			radioItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					if (event.getActionCommand().equals("GreedyAI")) {
-						currentGame.setPreferredAI(new GreedyAI(null));
-					}else if (event.getActionCommand().equals("HerdAI")) {
-						currentGame.setPreferredAI(new HerdAI(null));
-					}else if (event.getActionCommand().equals("RandomAI")) {
-						currentGame.setPreferredAI(new RandomAI(null));
-					}
+					currentGame.setPreferredAI(RegisteredAI.giveInstance(event.getActionCommand(), null));
+					allAI.setText("Make all players primary AI (" + currentGame.getPreferredAI().getName() + ")");
 					sideBar.updateAll();
 				}
 			});
@@ -98,36 +93,14 @@ public class MainFrame {
 			group.add(radioItem);
 		}
 		aiMenu.add(aiSubMenu);
-		JMenuItem allAI = new JMenuItem("Make all players " + currentGame.getPreferredAI().getName());
 		aiMenu.add(allAI);
 		allAI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
             	//Make all player into AIs
             	List<Player> players = currentGame.getPlayers();
             	for(int i = 0; i < players.size(); i++) {
-            		players.get(i).setAIPlayer(new GreedyAI(players.get(i)));
-            	}
-            }
-        });
-		JMenuItem allHerdAI = new JMenuItem("Make all players HerdAI");
-		aiMenu.add(allHerdAI);
-		allHerdAI.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-            	//Make all player into HerdAIs
-            	List<Player> players = currentGame.getPlayers();
-            	for(int i = 0; i < players.size(); i++) {
-            		players.get(i).setAIPlayer(new HerdAI(players.get(i)));
-            	}
-            }
-        });
-		JMenuItem makeAI = new JMenuItem("Make all but Player 1 into " + currentGame.getPreferredAI().getName());
-		aiMenu.add(makeAI);
-		makeAI.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-            	//Make all but first player into AIs
-            	List<Player> players = currentGame.getPlayers();
-            	for(int i = 1; i < players.size(); i++) {
-            		players.get(i).setAIPlayer(new GreedyAI(players.get(i)));
+            		AI ai = RegisteredAI.giveInstance(currentGame.getPreferredAI().getName(), players.get(i));
+            		players.get(i).setAIPlayer(ai);
             	}
             }
         });
