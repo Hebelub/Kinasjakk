@@ -4,7 +4,8 @@ A [super chinese checkers](https://en.wikipedia.org/wiki/Chinese_checkers#Varian
 ## Features
 - Create games with 2-6 players
 - Customize player names
-- Player versus the computer (AI)
+- Highlight possible jumps
+- Play versus the computer (AI)
 
 ![image](https://github.com/Hebelub/Kinasjakk/blob/restructuring/img/example.png?raw=true)
 
