@@ -2,7 +2,7 @@
 A [super chinese checkers](https://en.wikipedia.org/wiki/Chinese_checkers#Variants) application written in Java.
 
 ## Features
-- Create game with 2-6 players
+- Create games with 2-6 players
 - Customize player names
 - Player versus the computer (AI)
 
