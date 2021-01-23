@@ -1,11 +1,9 @@
 package AI;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import kinasjakk.Board;
-import kinasjakk.Hex;
+import kinasjakk.Game;
 import kinasjakk.HexMove;
 import kinasjakk.Player;
 
@@ -17,12 +15,12 @@ public class HerdAI extends AI {
 
 	public HexMove findMoveLowestOverallDistance(Board board) {
 		List<HexMove> possibleMoves = getPossibleMoves(board);
-		HexMove myMove = findRandomMoveNotFromGoal(possibleMoves);
+		HexMove myMove = null; //findRandomMoveNotFromGoal(possibleMoves);
 		double lowestScore = Integer.MAX_VALUE;
 		for(HexMove move : possibleMoves) {
 			// Make move, calculate score, then undo move
 			board.makeMove(move);
-			double score = distanceRemaining();
+			double score = distanceRemaining(player);
 			if (score < lowestScore) {
 				lowestScore = score;
 				myMove = move;
@@ -33,7 +31,7 @@ public class HerdAI extends AI {
 	}
 	
 	@Override
-	public HexMove nextMove(Board board) {
+	public HexMove nextMove(Board board, Game game) {
 		return findMoveLowestOverallDistance(board);		
 	}
 }

@@ -1,9 +1,9 @@
 package AI;
 
 import java.util.List;
-import java.util.Random;
 
 import kinasjakk.Board;
+import kinasjakk.Game;
 import kinasjakk.HexMove;
 import kinasjakk.Player;
 
@@ -14,7 +14,7 @@ public class RandomAI extends AI {
 	}
 	
 	@Override
-	public HexMove nextMove(Board board) {
+	public HexMove nextMove(Board board, Game game) {
 		// Do random move if piece not in goal
 		List<HexMove> possibleMoves = board.getPossibleMovesFrom(player);
 		return findRandomMoveNotFromGoal(possibleMoves);

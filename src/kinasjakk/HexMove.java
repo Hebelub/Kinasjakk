@@ -8,8 +8,6 @@ import java.util.List;
 // immutable
 public class HexMove implements Comparable<HexMove> {
 	
-	
-	
 	private Player player;
 	private Piece piece;
 	private List<HexJump> path;

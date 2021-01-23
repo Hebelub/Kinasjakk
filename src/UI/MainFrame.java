@@ -119,6 +119,19 @@ public class MainFrame {
             	peopleWindow.open(currentGame.getPlayers());
             }
         });
+		JMenuItem herdVsMinimax = new JMenuItem("HerdAI vs MinimaxAI");
+		playerMenu.add(herdVsMinimax);
+		herdVsMinimax.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+            	currentGame.newGame(2);
+            	List<Player> players = currentGame.getPlayers();
+            	for(int i = 0; i < 2; i++) {
+            		if (i == 0) players.get(i).setAIPlayer(RegisteredAI.giveInstance("HerdAI", players.get(i)));
+            		else players.get(i).setAIPlayer(RegisteredAI.giveInstance("MinimaxAI", players.get(i)));
+            	}
+            	sideBar.updateAll();
+            }
+        });
 		for(int i = 2; i <= 6; i+= 2) {
 			JMenuItem item = new JMenuItem("Setup " + Integer.toString(i) + " players");
 			playerMenu.add(item);

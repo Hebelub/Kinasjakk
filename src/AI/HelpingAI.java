@@ -1,11 +1,7 @@
 package AI;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import kinasjakk.Board;
-import kinasjakk.Hex;
+import kinasjakk.Game;
 import kinasjakk.HexMove;
 import kinasjakk.Player;
 
@@ -16,7 +12,7 @@ public class HelpingAI extends AI {
 	}
 	
 	@Override
-	public HexMove nextMove(Board board) {
+	public HexMove nextMove(Board board, Game game) {
 		return null;
 	}
 }

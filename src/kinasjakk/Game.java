@@ -107,7 +107,7 @@ public class Game {
 		} else {
 			findBestMoveAI = whoseTurn.getAI();
 		}
-		doMove(findBestMoveAI.nextMove(board));
+		doMove(findBestMoveAI.nextMove(board, this));
 	}
 	
 	public void doMove(HexMove hexMove) {
@@ -152,7 +152,7 @@ public class Game {
 		// If AI and not finished game, do move!		
 		if (!p.isHumanPlayer()) {
 			AI ai = p.getAI();
-			HexMove nextMove = ai.nextMove(board);
+			HexMove nextMove = ai.nextMove(board, this);
 			// Can continues to automatically do AI moves if a human player
 			// exits, as it ends in human's turn and not infinite loop
 			applyMove(nextMove);

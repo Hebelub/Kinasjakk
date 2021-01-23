@@ -3,8 +3,6 @@ package kinasjakk;
 import java.util.*;
 import java.util.List;
 
-import javafx.scene.shape.Line;
-
 public class Hex implements Comparable<Hex> {
 
 	@Override

@@ -8,7 +8,8 @@ public class RegisteredAI {
 		String[] names = {
 			"RandomAI",
 			"GreedyAI",
-			"HerdAI",		
+			"HerdAI",	
+			"MinimaxAI",
 		};
 		return names;
 	}
@@ -21,6 +22,8 @@ public class RegisteredAI {
 			return new GreedyAI(p);
 		case "HerdAI":
 			return new HerdAI(p);
+		case "MinimaxAI":
+			return new MinimaxAI(p);
 		default:
 			return new RandomAI(p);
 		}

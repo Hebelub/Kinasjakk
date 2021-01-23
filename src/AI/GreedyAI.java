@@ -1,11 +1,9 @@
 package AI;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import kinasjakk.Board;
-import kinasjakk.Hex;
+import kinasjakk.Game;
 import kinasjakk.HexMove;
 import kinasjakk.Player;
 
@@ -16,7 +14,7 @@ public class GreedyAI extends AI {
 	}
 
 	@Override
-	public HexMove nextMove(Board board) {
+	public HexMove nextMove(Board board, Game game) {
 		// This AI has the following priorities:
 		// 1. Find move that ends in goal hex (an opponent's hex)
 		// 2. Do move that gets closest to goal hex
@@ -27,7 +25,7 @@ public class GreedyAI extends AI {
 			myMove = goalMoves.get(0);
 			printAction("found goal move");
 		} else { // Try to find move that gets closest to goal hex
-			myMove = findClosestMoveToGoal(possibleMoves, board);
+			myMove = findClosestMoveToGoal(possibleMoves, board, player);
 			printAction("tried to get as close as possible");
 		}
 		addMoveToLatest(myMove);
