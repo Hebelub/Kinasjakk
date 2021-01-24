@@ -10,6 +10,7 @@ public class RegisteredAI {
 			"GreedyAI",
 			"HerdAI",	
 			"MinimaxAI",
+			"MinimaxAI_Dist_Goal",
 		};
 		return names;
 	}
@@ -24,6 +25,8 @@ public class RegisteredAI {
 			return new HerdAI(p);
 		case "MinimaxAI":
 			return new MinimaxAI(p);
+		case "MinimaxAI_Dist_Goal":
+			return new MinimaxAI_Dist_Goal(p);
 		default:
 			return new RandomAI(p);
 		}

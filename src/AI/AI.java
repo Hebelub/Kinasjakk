@@ -152,6 +152,16 @@ public abstract class AI {
 		return notFromGoal.get(rand.nextInt(notFromGoal.size()));
 	}
 	
+	protected int numOfPiecesInGoal(Player p) {
+		int sum = 0;
+		for(Piece piece : p.getPieces()) {
+			if (piece.getHex().ownedByOpponent(p)) {
+				sum++;
+			}
+		}
+		return sum;
+	}
+	
 	/**
      * Calculates the sum of every piece's distance to the goal
      * In other words, the distance remaining to win

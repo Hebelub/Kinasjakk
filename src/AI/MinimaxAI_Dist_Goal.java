@@ -10,7 +10,7 @@ import kinasjakk.HexMove;
 import kinasjakk.Piece;
 import kinasjakk.Player;
 
-public class MinimaxAI extends AI {
+public class MinimaxAI_Dist_Goal extends AI {
 	
 	static int DEPTH = 3;
 	
@@ -23,8 +23,8 @@ public class MinimaxAI extends AI {
 		}
 	}
 
-	public MinimaxAI(Player player) {
-		super(player, "MinimaxAI");
+	public MinimaxAI_Dist_Goal(Player player) {
+		super(player, "MinimaxAI_Dist_Goal");
 	}
 	
 	@Override
@@ -39,29 +39,9 @@ public class MinimaxAI extends AI {
 	}
 	
 	private int evaluateBoard(Game game, boolean maximize) {
-		//int distance = distanceRemaining(player.getOpponent()) - distanceRemaining(player);
-		Player whoseTurn = whoIsPlayingBasedOnMaximize(maximize);
-		int sum = 0;
-		List<HexMove> moves = game.getBoard().getPossibleMovesFrom(whoseTurn);
-		for(HexMove move : moves) {
-			if (!move.getEndHex().ownedByOpponent(whoseTurn)) {
-				Hex endHex = move.getEndHex();
-				Hex goal = findFurthestGoalHex(move.getStartHex());
-				if (goal != null)
-					sum += nonSqrtDistance(endHex, goal);
-			}
-		}
-		List<HexMove> oppMoves = game.getBoard().getPossibleMovesFrom(whoseTurn.getOpponent());
-		for(HexMove move : oppMoves) {
-			if (!move.getEndHex().ownedByPlayer(whoseTurn)) {
-				Hex endHex = move.getEndHex();
-				Hex goal = findFurthestGoalHex(move.getStartHex());
-				if (goal != null)
-					sum -= nonSqrtDistance(endHex, goal);
-			}
-		}
+		int distance = distanceRemaining(player.getOpponent()) - distanceRemaining(player);
 		int insidePieces = numOfPiecesInGoal(player) - numOfPiecesInGoal(player.getOpponent());
-		return insidePieces * 9999 + sum;
+		return distance + insidePieces * 250;
 	}
 	
 	private EvalMove minimax(Game game, int depth, int alpha, int beta, boolean maximize) {
