@@ -149,6 +149,7 @@ public abstract class AI {
 			}
 		}
 		Random rand = new Random();
+		//TODO something wrong here if goals become full!!
 		return notFromGoal.get(rand.nextInt(notFromGoal.size()));
 	}
 	

@@ -296,8 +296,8 @@ public class Game {
 							Color.YELLOW,
 					};*/
 					Color[] playerColors = {
-							Color.YELLOW, // 1
-							Color.RED, // 2
+							Color.RED, // 1
+							Color.YELLOW, // 2
 							Color.BLUE, // 3
 							Color.GREEN, // 4
 							Color.WHITE, // 5

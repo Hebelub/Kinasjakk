@@ -1,6 +1,8 @@
 package AI;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import kinasjakk.Board;
@@ -13,6 +15,19 @@ import kinasjakk.Player;
 public class MinimaxAI_Dist_Goal extends AI {
 	
 	static int DEPTH = 3;
+	
+	Comparator<HexMove> compareHexMoves = new Comparator<HexMove>() {
+	    @Override
+	    public int compare(HexMove move1, HexMove move2) {
+	    	Hex goal = findFurthestGoalHex(move1.getStartHex());
+	    	if (goal == null) return 1;
+	    	int d1 = nonSqrtDistance(goal, move1.getStartHex());
+	    	int d2 = nonSqrtDistance(goal, move2.getStartHex());
+	    	if (d1 > d2) return -1;
+	    	else if (d2 > d1) return 1;
+	    	return 0;
+	    }
+	};
 	
 	class EvalMove {
 		public int evalValue;
@@ -29,8 +44,12 @@ public class MinimaxAI_Dist_Goal extends AI {
 	
 	@Override
 	public HexMove nextMove(Board board, Game game) {
+		List<HexMove> possibleMoves = game.getBoard().getPossibleMovesFrom(player);
+		if (possibleMoves.size() < 60) DEPTH = 5;
+		else if (possibleMoves.size() < 120) DEPTH = 4;
+		else DEPTH = 3;
 		EvalMove evalMove = minimax(game, DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
-		System.out.println(evalMove.move);
+		System.out.println(evalMove.move + " (searched " + DEPTH + " deep)");
 		return evalMove.move;
 	}
 	
@@ -40,8 +59,9 @@ public class MinimaxAI_Dist_Goal extends AI {
 	
 	private int evaluateBoard(Game game, boolean maximize) {
 		int distance = distanceRemaining(player.getOpponent()) - distanceRemaining(player);
+		// TODO if no jumps, its negative stuff
 		int insidePieces = numOfPiecesInGoal(player) - numOfPiecesInGoal(player.getOpponent());
-		return distance + insidePieces * 250;
+		return distance + (int)Math.pow(20, insidePieces);
 	}
 	
 	private EvalMove minimax(Game game, int depth, int alpha, int beta, boolean maximize) {
@@ -53,7 +73,11 @@ public class MinimaxAI_Dist_Goal extends AI {
 		HexMove bestMove = null;
 		Player whoseTurn = whoIsPlayingBasedOnMaximize(maximize);
 		List<HexMove> possibleMoves = game.getBoard().getPossibleMovesFrom(whoseTurn);
-		Collections.shuffle(possibleMoves);
+		try {
+			Collections.sort(possibleMoves, compareHexMoves);
+		} catch(Exception e) {
+			
+		}
 		if (maximize) {
 			int maxEval = Integer.MIN_VALUE;
 			int i = 0;
@@ -67,12 +91,7 @@ public class MinimaxAI_Dist_Goal extends AI {
 				if (eval > maxEval) {
 					maxEval = eval;
 					bestMove = move;
-					if (depth == DEPTH) {
-						Hex goal = findFurthestGoalHex(move.getStartHex());
-						if (goal != null)
-							System.out.println("Calculating distance towards goal = " + goal.id + " for player " + whoseTurn.getID());
-						System.out.println(move + " VALUE: " + maxEval);
-					}
+					if (depth == DEPTH) System.out.println(move + " VALUE: " + maxEval);
 				}
 				alpha = Math.max(alpha, eval);
 				if (beta <= alpha) break;
