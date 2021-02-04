@@ -25,6 +25,7 @@ import AI.AI;
 import AI.RegisteredAI;
 import kinasjakk.Game;
 import kinasjakk.Player;
+import util.Exporter;
 
 public class MainFrame {
 	
@@ -72,6 +73,7 @@ public class MainFrame {
     }
 	
 	private JMenu createAIMenu() {
+		
 		JMenuItem allAI = new JMenuItem("Make all players primary AI (" + currentGame.getPreferredAI().getName() + ")");
 		JMenu aiMenu = new JMenu("AI");
 		JMenu aiSubMenu = new JMenu("Set primary AI");
@@ -104,6 +106,15 @@ public class MainFrame {
             	}
             }
         });
+		JMenuItem exportSimulation = new JMenuItem("Export dataset from AI gameplay");
+		exportSimulation.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+            	Exporter export = new Exporter();
+            	export.exportDataset();
+            }
+        });
+		aiMenu.add(exportSimulation);
+		
 		return aiMenu;
 	}
 	
